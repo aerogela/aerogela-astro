@@ -1,4 +1,5 @@
 ---
+import '../styles/global.css';
 import { SITE, pageTitle, canonical } from '../lib/seo';
 
 interface Props {
@@ -20,6 +21,7 @@ const graph = [
   ...schema,
 ];
 const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -39,60 +41,107 @@ const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': grap
     {ogImage && <meta property="og:image" content={new URL(ogImage, SITE.domain).href} />}
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="/fonts/archivo-400_700-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/bricolagegrotesque-600_800-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <script type="application/ld+json" set:html={jsonLd} />
-    <style is:global>
-      :root {
-        --bg: #fafbfc; --surface: #ffffff; --ink: #17202b; --muted: #5b6572;
-        --accent: #1f5eff; --rule: #e6eaef;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0; background: var(--bg); color: var(--ink);
-        font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-        line-height: 1.7; font-size: 16px;
-      }
-      a { color: var(--accent); text-decoration: none; }
-      a:hover { text-decoration: underline; }
-      .wrap { max-width: 1080px; margin: 0 auto; padding: 0 1.25rem; }
-      header.site { border-bottom: 1px solid var(--rule); background: var(--surface); }
-      .sitebar { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 0; flex-wrap: wrap; gap: 0.75rem; }
-      .brand { font-weight: 800; font-size: 1.25rem; color: var(--ink); }
-      nav.main a { margin-left: 1.2rem; font-size: 0.92rem; color: var(--muted); }
-      nav.main a:hover { color: var(--ink); }
-      main { min-height: 60vh; padding: 2rem 0 3rem; }
-      footer.site { border-top: 1px solid var(--rule); padding: 2rem 0; color: var(--muted); font-size: 0.85rem; background: var(--surface); }
-      .prose { max-width: 46rem; }
-      .prose img { max-width: 100%; height: auto; border-radius: 8px; }
-      .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-      .prose th, .prose td { border: 1px solid var(--rule); padding: 0.55rem 0.7rem; text-align: left; }
-      .prose h2, .prose h3 { line-height: 1.35; margin-top: 1.8em; }
-      h1 { font-size: 1.9rem; line-height: 1.25; margin: 0.4rem 0 0.8rem; }
-      .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
-      .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 1rem 1.15rem; }
-      .card h3 { margin: 0 0 0.35rem; font-size: 1.05rem; }
-      .muted { color: var(--muted); font-size: 0.88rem; }
-      .badge { display: inline-block; font-size: 0.74rem; font-weight: 700; padding: 0.08rem 0.55rem; border-radius: 99px; background: #eef2ff; color: var(--accent); margin-right: 0.4rem; }
-      .crumb { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; }
-    </style>
   </head>
   <body>
-    <header class="site">
+    <div class="topbar">
+      <div class="wrap">
+        <span class="fact">The aerogel industry directory<em></em></span>
+        <span class="fact">
+          <a href="/submit-a-listing/">Submit a listing</a><span class="sep">/</span>
+          <a href="/how-listings-are-reviewed/">Review policy</a>
+        </span>
+      </div>
+    </div>
+
+    <header class="site-header">
       <div class="wrap sitebar">
-        <a class="brand" href="/">{SITE.name}</a>
-        <nav class="main">
+        <a class="brand" href="/">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+            <rect x="1.5" y="8.5" width="16" height="16" rx="3" fill="#0d7684" opacity="0.25" />
+            <rect x="5" y="5" width="16" height="16" rx="3" fill="#0d7684" opacity="0.5" />
+            <rect x="8.5" y="1.5" width="16" height="16" rx="3" fill="#0d7684" />
+          </svg>
+          aerogela
+        </a>
+        <nav class="nav">
           <a href="/listing/">Suppliers</a>
-          <a href="/blog/">Blog</a>
+          <a href="/blog/">Knowledge</a>
           <a href="/search/">Search</a>
           <a href="/about-aerogela/">About</a>
         </nav>
       </div>
     </header>
-    <main class="wrap">
+
+    <main>
       <slot />
     </main>
-    <footer class="site">
+
+    <footer class="site-footer">
       <div class="wrap">
-        <p>{SITE.description} &copy; {new Date().getFullYear()} {SITE.name}.</p>
+        <div class="foot-grid">
+          <div>
+            <div class="foot-brand">
+              <svg width="22" height="22" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+                <rect x="1.5" y="8.5" width="16" height="16" rx="3" fill="#0d7684" opacity="0.25" />
+                <rect x="5" y="5" width="16" height="16" rx="3" fill="#0d7684" opacity="0.5" />
+                <rect x="8.5" y="1.5" width="16" height="16" rx="3" fill="#0d7684" />
+              </svg>
+              aerogela
+            </div>
+            <p class="foot-about">
+              Global directory of aerogel manufacturers, suppliers and distributors — verified
+              listings, technical knowledge, and sourcing intelligence.
+            </p>
+          </div>
+          <div class="foot-col">
+            <h4>Directory</h4>
+            <ul>
+              <li><a href="/listing/">All suppliers</a></li>
+              <li><a href="/listing-category/aerogel-producers/">Producers</a></li>
+              <li><a href="/listing-category/distributors/">Distributors</a></li>
+              <li><a href="/listing-category/equipment-materials/">Equipment &amp; materials</a></li>
+              <li><a href="/listing-category/research-services/">Research &amp; services</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h4>Knowledge</h4>
+            <ul>
+              <li><a href="/blog/">All articles</a></li>
+              <li><a href="/blog/what-is-aerogel-insulation/">What is aerogel insulation</a></li>
+              <li><a href="/blog/how-to-choose-aerogel-suppliers/">Choosing suppliers</a></li>
+              <li><a href="/search/">Search</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h4>Company</h4>
+            <ul>
+              <li><a href="/about-aerogela/">About</a></li>
+              <li><a href="/verification-policy/">Verification policy</a></li>
+              <li><a href="/submit-a-listing/">Submit a listing</a></li>
+              <li><a href="/privacy-policy-2/">Privacy</a></li>
+              <li><a href="/terms-of-use/">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="foot-base">
+          <span>© {year} aerogela.com — aerogel industry directory</span>
+          <span>Built as a static site · aerogel-insulated 🧊</span>
+        </div>
       </div>
     </footer>
   </body>

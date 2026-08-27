@@ -21,19 +21,35 @@ const schema = [
   articleSchema(e, url),
   breadcrumbSchema([
     { name: 'Home', url: `${SITE.domain}/` },
-    { name: 'Blog', url: `${SITE.domain}/blog/` },
+    { name: 'Knowledge', url: `${SITE.domain}/blog/` },
     { name: e.title, url },
   ]),
 ];
+
+const words = htmlToText(e.content).split(/\s+/).length;
+const mins = Math.max(1, Math.round(words / 220));
 ---
 
 <Base title={e.title} description={desc} path={path} ogImage={ogImage} schema={schema}>
-  <div class="crumb">
-    <a href="/">Home</a> / <a href="/blog/">Blog</a> / {e.title}
+  <div class="page-head">
+    <div class="wrap">
+      <div class="crumbs">
+        <a href="/">Home</a><span class="crumb-sep">/</span><a href="/blog/">Knowledge</a><span class="crumb-sep">/</span>{e.title}
+      </div>
+      <span class="eyebrow">Knowledge base</span>
+      <h1>{e.title}</h1>
+    </div>
   </div>
-  <article class="prose" data-pagefind-body data-pagefind-filter="type:Article">
-    <h1>{e.title}</h1>
-    {e.date && <p class="muted">{new Date(e.date).toISOString().slice(0, 10)}</p>}
-    <div set:html={e.content} />
-  </article>
+
+  <div class="wrap">
+    <article style="max-width:47rem;margin:0 auto;padding-top:2.2rem;">
+      <div data-pagefind-body data-pagefind-filter="type:Article">
+        <div class="art-meta">
+          <span class="dt">{new Date(e.date).toISOString().slice(0, 10)}</span>
+          <span class="rd">{mins} min read</span>
+        </div>
+        <div class="prose" set:html={e.content} />
+      </div>
+    </article>
+  </div>
 </Base>

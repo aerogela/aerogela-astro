@@ -11,9 +11,9 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const { name, desc } = Astro.props;
-const listings = (await getCollection('listings')).filter((l) =>
-  (l.data.category || []).includes(name)
-);
+const listings = (await getCollection('listings'))
+  .sort((a, b) => (b.data.date || '').localeCompare(a.data.date || ''))
+  .filter((l) => (l.data.category || []).includes(name));
 
 const schema = [
   breadcrumbSchema([
@@ -26,22 +26,38 @@ const schema = [
 
 <Base
   title={`${name} Suppliers`}
-  description={desc || `Aerogel companies in the ${name} category.`}
+  description={desc || `Aerogel companies in the ${name} category — verified listings on aerogela.`}
   path={`/listing-category/${slug}/`}
   schema={schema}
 >
-  <div class="crumb">
-    <a href="/">Home</a> / <a href="/listing/">Suppliers</a> / {name}
-  </div>
-  <h1>{name} Suppliers</h1>
-  <p class="muted">{listings.length} companies listed.</p>
-
-  <div class="card-grid">
-    {listings.map((l) => (
-      <div class="card">
-        <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
-        <p class="muted">{l.data.location?.[0] ?? ''}</p>
+  <div class="page-head">
+    <div class="wrap">
+      <div class="crumbs">
+        <a href="/">Home</a><span class="crumb-sep">/</span><a href="/listing/">Suppliers</a><span class="crumb-sep">/</span>{name}
       </div>
-    ))}
+      <span class="eyebrow">Directory</span>
+      <h1>{name} Suppliers</h1>
+      <p class="sub">{desc || `Aerogel companies in the ${name} category.`}</p>
+    </div>
   </div>
+
+  <section class="section">
+    <div class="wrap">
+      <p style="font-family:var(--font-mono);font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:0 0 1.4rem;">
+        {listings.length} listing{listings.length === 1 ? '' : 's'} in this category
+      </p>
+      <div class="cards">
+        {listings.map((l, i) => (
+          <article class="card">
+            <span class="no">No. {String(listings.length - i).padStart(3, '0')}</span>
+            <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
+            <span class="loc">{l.data.location?.[0] ?? 'Worldwide'}</span>
+            <div class="tags">
+              {(l.data.main_products ?? []).slice(0, 2).map((c) => <span class="tag">{c}</span>)}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
 </Base>

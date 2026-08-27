@@ -4,7 +4,9 @@ import Base from '../../layouts/Base.astro';
 import { SITE, breadcrumbSchema } from '../../lib/seo';
 import taxonomy from '../../data/taxonomy.json';
 
-const listings = await getCollection('listings');
+const listings = (await getCollection('listings')).sort((a, b) =>
+  (b.data.date || '').localeCompare(a.data.date || '')
+);
 const categories = taxonomy.hp_listing_category || [];
 
 const schema = [
@@ -17,27 +19,44 @@ const schema = [
 
 <Base
   title="Aerogel Suppliers Directory"
-  description="Browse all aerogel manufacturers, suppliers and distributors listed on aerogela."
+  description="Browse all aerogel manufacturers, suppliers and distributors — verified listings across 25 countries, filterable by category and region."
   path="/listing/"
   schema={schema}
 >
-  <div class="crumb"><a href="/">Home</a> / Suppliers</div>
-  <h1>Aerogel Suppliers</h1>
-  <p class="muted">{listings.length} verified aerogel companies worldwide.</p>
-
-  <nav style="margin:1rem 0;">
-    {categories.map((c) => (
-      <a class="badge" href={`/listing-category/${c.slug}/`}>{c.name}</a>
-    ))}
-  </nav>
-
-  <div class="card-grid">
-    {listings.map((l) => (
-      <div class="card">
-        <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
-        <p class="muted">{l.data.location?.[0] ?? ''}</p>
-        <p class="muted">{l.data.main_products?.slice(0, 3).join(', ') ?? ''}</p>
-      </div>
-    ))}
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Directory</span>
+      <h1>Aerogel Suppliers &amp; Manufacturers</h1>
+      <p class="sub">
+        {listings.length} verified listings — from global blanket producers to regional
+        distributors, equipment and research partners. Every entry is reviewed against our
+        <a href="/how-listings-are-reviewed/">listing policy</a>.
+      </p>
+    </div>
   </div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="chips">
+        <a class="chip" href="/listing/">All · {listings.length}</a>
+        {categories.map((c) => <a class="chip" href={`/listing-category/${c.slug}/`}>{c.name}</a>)}
+      </div>
+
+      <div class="cards">
+        {listings.map((l, i) => (
+          <article class="card">
+            <span class="no">No. {String(listings.length - i).padStart(3, '0')}</span>
+            <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
+            <span class="loc">{l.data.location?.[0] ?? 'Worldwide'}</span>
+            <div class="tags">
+              {(l.data.category ?? []).slice(0, 2).map((c) => <span class="tag">{c}</span>)}
+            </div>
+            {l.data.main_products?.length ? (
+              <p class="exc">{l.data.main_products.slice(0, 3).join(' · ')}</p>
+            ) : null}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
 </Base>

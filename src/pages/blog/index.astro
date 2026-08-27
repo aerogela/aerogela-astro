@@ -10,27 +10,40 @@ const posts = (await getCollection('posts')).sort((a, b) =>
 const schema = [
   breadcrumbSchema([
     { name: 'Home', url: `${SITE.domain}/` },
-    { name: 'Blog', url: `${SITE.domain}/blog/` },
+    { name: 'Knowledge', url: `${SITE.domain}/blog/` },
   ]),
 ];
 ---
 
 <Base
   title="Aerogel Knowledge Base"
-  description="Guides and articles on aerogel insulation, silica aerogel, thermal barriers, and supplier selection."
+  description="Technical guides on aerogel materials, insulation, blankets, applications and supplier selection — the aerogela knowledge base."
   path="/blog/"
   schema={schema}
 >
-  <div class="crumb"><a href="/">Home</a> / Blog</div>
-  <h1>Knowledge Base</h1>
-  <p class="muted">{posts.length} articles on aerogel materials, applications and sourcing.</p>
-
-  <div class="card-grid">
-    {posts.map((p) => (
-      <div class="card">
-        <h3><a href={`/blog/${p.data.slug}/`}>{p.data.title}</a></h3>
-        <p class="muted">{p.data.excerpt}</p>
-      </div>
-    ))}
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Knowledge base</span>
+      <h1>Aerogel guides &amp; industry insights</h1>
+      <p class="sub">
+        {posts.length} articles on aerogel science, insulation products, applications and
+        sourcing — written for engineers and procurement teams.
+      </p>
+    </div>
   </div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="cards">
+        {posts.map((p) => (
+          <article class="card">
+            <span class="no">{new Date(p.data.date).toISOString().slice(0, 10)}</span>
+            <h3><a href={`/blog/${p.data.slug}/`}>{p.data.title}</a></h3>
+            {p.data.excerpt && <p class="exc">{p.data.excerpt}</p>}
+            <span class="loc" style="margin-top:auto;">Read article</span>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
 </Base>

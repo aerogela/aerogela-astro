@@ -1,17 +1,16 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 
-const listings = await getCollection('listings');
+const listings = 133;
 ---
 
 <Base title="Page Not Found" description="The page you are looking for does not exist." path="/404" noindex>
-  <h1>Page Not Found</h1>
-  <p class="muted">The page you are looking for does not exist or has been moved.</p>
-  <ul class="muted" style="margin:1rem 0 0;padding-left:1.1rem;">
-    <li><a href="/">Home</a></li>
-    <li><a href="/listing/">Browse {listings.length} aerogel suppliers</a></li>
-    <li><a href="/blog/">Knowledge base</a></li>
-    <li><a href="/search/">Search the site</a></li>
-  </ul>
+  <div class="nf wrap">
+    <div class="code">4<em>0</em>4</div>
+    <p>The page you are looking for does not exist or has been moved during migration.</p>
+    <div class="cta-row">
+      <a class="btn btn-solid" href="/">Back to home <span class="arr">→</span></a>
+      <a class="btn btn-ghost" href="/listing/">Browse {listings} suppliers</a>
+    </div>
+  </div>
 </Base>

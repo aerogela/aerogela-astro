@@ -28,38 +28,86 @@ const schema = [
 ---
 
 <Base title={e.title} description={desc} path={path} ogImage={ogImage} schema={schema}>
-  <div class="crumb">
-    <a href="/">Home</a> / <a href="/listing/">Suppliers</a> / {e.title}
+  <div class="page-head">
+    <div class="wrap">
+      <div class="crumbs">
+        <a href="/">Home</a><span class="crumb-sep">/</span><a href="/listing/">Suppliers</a><span class="crumb-sep">/</span>{e.title}
+      </div>
+      <span class="eyebrow">Supplier datasheet</span>
+      <h1>{e.title}</h1>
+      {e.review_status === 'reviewed' && <span class="verified">Reviewed listing</span>}
+    </div>
   </div>
-  <article data-pagefind-body data-pagefind-filter="type:Supplier">
-    <h1>{e.title}</h1>
 
-    {(e.location?.length || e.category?.length) && (
-      <p class="muted loc" style="margin-bottom:1rem;">
-        {e.location?.map((l) => <span data-pagefind-filter="location">{l}</span>)}
-        {e.category?.length ? ' · ' : ''}
-        {e.category?.map((c) => <span data-pagefind-filter="category">{c}</span>)}
-      </p>
-    )}
+  <div class="wrap">
+    <div class="sheet">
+      <div class="sheet-main">
+        <article data-pagefind-body data-pagefind-filter="type:Supplier">
+          <div class="art-meta">
+            {e.location?.length && <span class="dt">{e.location.join(', ')}</span>}
+            {e.category?.length && <span class="rd">{e.category.join(' · ')}</span>}
+          </div>
+          <span style="display:none;">
+            {e.location?.map((l) => <span data-pagefind-filter="location">{l}</span>)}
+            {e.category?.map((c) => <span data-pagefind-filter="category">{c}</span>)}
+          </span>
+          <div class="prose" set:html={e.content} />
+        </article>
+      </div>
 
-    {e.website && (
-      <p><strong>Website:</strong> <a href={e.website} rel="nofollow noopener">{e.website}</a></p>
-    )}
-    {e.certifications && (
-      <p><strong>Certifications:</strong> {e.certifications}</p>
-    )}
-    {e.main_products?.length && (
-      <p><strong>Main products:</strong> {e.main_products.join(', ')}</p>
-    )}
-    {e.application_fields?.length && (
-      <p><strong>Applications:</strong> {e.application_fields.join(', ')}</p>
-    )}
+      <aside class="sheet-aside">
+        <div class="meta-card">
+          <div class="mc-head"><span>Company profile</span><span class="dot"></span></div>
+          {e.website && (
+            <div class="mc-row">
+              <div class="k">Website</div>
+              <div class="v"><a href={e.website} rel="nofollow noopener" target="_blank">{e.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')} ↗</a></div>
+            </div>
+          )}
+          {e.location?.length ? (
+            <div class="mc-row">
+              <div class="k">Location</div>
+              <div class="v">{e.location.join(', ')}</div>
+            </div>
+          ) : null}
+          {e.category?.length ? (
+            <div class="mc-row">
+              <div class="k">Category</div>
+              <div class="v">{e.category.join(', ')}</div>
+            </div>
+          ) : null}
+          {e.main_products?.length ? (
+            <div class="mc-row">
+              <div class="k">Main products</div>
+              <div class="v">{e.main_products.join(', ')}</div>
+            </div>
+          ) : null}
+          {e.application_fields?.length ? (
+            <div class="mc-row">
+              <div class="k">Applications</div>
+              <div class="v">{e.application_fields.join(', ')}</div>
+            </div>
+          ) : null}
+          {e.certifications ? (
+            <div class="mc-row">
+              <div class="k">Certifications</div>
+              <div class="v">{e.certifications}</div>
+            </div>
+          ) : null}
+          <div class="mc-row">
+            <div class="k">Listing data</div>
+            <div class="v" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);">
+              ID {e.slug}<br />Added {new Date(e.date).toISOString().slice(0, 10)}
+            </div>
+          </div>
+        </div>
 
-    {e.content && (
-      <div class="prose" style="margin-top:1.5rem;" set:html={e.content} />
-    )}
-  </article>
-  <style>
-    .loc span + span::before { content: ', '; }
-  </style>
+        <p style="margin-top:1rem;font-size:0.82rem;color:var(--muted);line-height:1.6;">
+          Listing information is provided for sourcing research. Verify specifications and
+          certifications directly with the supplier. See our
+          <a href="/verification-policy/">verification policy</a>.
+        </p>
+      </aside>
+    </div>
+  </div>
 </Base>

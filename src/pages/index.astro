@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { SITE, webSiteSchema, breadcrumbSchema, htmlToText } from '../lib/seo';
+import taxonomy from '../data/taxonomy.json';
 
 const listings = (await getCollection('listings')).sort((a, b) =>
   (b.data.date || '').localeCompare(a.data.date || '')
@@ -12,6 +13,23 @@ const posts = (await getCollection('posts')).sort((a, b) =>
 const allPages = await getCollection('pages');
 const home = allPages.find((p) => p.data.slug === 'home');
 
+// 从 WP 首页内容提取 H1 与导语做 hero，并从正文剔除（消除重复 H1）
+let homeBody = home?.data.content || '';
+const h1m = homeBody.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+const heroTitle = h1m ? h1m[1].replace(/<[^>]+>/g, '').trim() : 'Aerogel Manufacturers, Suppliers & Industry Insights';
+const pm = homeBody.match(/<p[^>]*>([\s\S]*?)<\/p>/);
+const heroLede = pm ? pm[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+if (h1m) homeBody = homeBody.replace(/<h1[\s\S]*?<\/h1>/, '');
+if (pm) homeBody = homeBody.replace(/<p[^>]*>[\s\S]*?<\/p>/, '');
+
+const locations = taxonomy.hp_listing_location || [];
+const stats = [
+  { n: listings.length, l: 'Listed suppliers' },
+  { n: locations.length, l: 'Countries covered' },
+  { n: posts.length, l: 'Knowledge articles' },
+  { n: 15, l: 'Product categories' },
+];
+
 const schema = [
   webSiteSchema(),
   breadcrumbSchema([{ name: 'Home', url: `${SITE.domain}/` }]),
@@ -20,31 +38,79 @@ const desc = htmlToText(home?.data.content || '', 160) || SITE.description;
 ---
 
 <Base title={SITE.name} description={desc} path="/" schema={schema}>
-  {home && (
-    <div class="prose" style="max-width:100%;" set:html={home.data.content} />
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">The global aerogel directory</span>
+      <h1>{heroTitle}</h1>
+      <p class="lede">{heroLede}</p>
+      <div class="cta-row">
+        <a class="btn btn-solid" href="/listing/">Browse suppliers <span class="arr">→</span></a>
+        <a class="btn btn-ghost" href="/blog/what-is-aerogel-insulation/">What is aerogel? <span class="arr">→</span></a>
+      </div>
+      <div class="stats">
+        {stats.map((s) => (
+          <div class="stat"><div class="n">{s.n}<sup>+</sup></div><div class="l">{s.l}</div></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Directory</span>
+          <h2>Recently listed suppliers</h2>
+        </div>
+        <a class="view-all" href="/listing/">View all {listings.length} <span class="arr">→</span></a>
+      </div>
+      <div class="cards">
+        {listings.slice(0, 6).map((l, i) => (
+          <article class="card">
+            <span class="no">No. {String(listings.length - i).padStart(3, '0')}</span>
+            <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
+            <span class="loc">{l.data.location?.[0] ?? 'Worldwide'}</span>
+            <div class="tags">
+              {(l.data.category ?? []).slice(0, 2).map((c) => <span class="tag">{c}</span>)}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Knowledge base</span>
+          <h2>Technical guides &amp; insights</h2>
+        </div>
+        <a class="view-all" href="/blog/">View all articles <span class="arr">→</span></a>
+      </div>
+      <div class="cards">
+        {posts.slice(0, 3).map((p) => (
+          <article class="card">
+            <span class="no">{new Date(p.data.date).toISOString().slice(0, 10)}</span>
+            <h3><a href={`/blog/${p.data.slug}/`}>{p.data.title}</a></h3>
+            {p.data.excerpt && <p class="exc">{p.data.excerpt}</p>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {homeBody && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Explore by region</span>
+            <h2>Country &amp; regional directories</h2>
+          </div>
+        </div>
+        <div class="prose" style="max-width:100%;" set:html={homeBody} />
+      </div>
+    </section>
   )}
-
-  <section style="margin-top:2.5rem;">
-    <h2>Latest Suppliers</h2>
-    <div class="card-grid">
-      {listings.slice(0, 12).map((l) => (
-        <div class="card">
-          <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
-          <p class="muted">{l.data.location?.[0] ?? ''}</p>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <section style="margin-top:2.5rem;">
-    <h2>From the Knowledge Base</h2>
-    <div class="card-grid">
-      {posts.slice(0, 6).map((p) => (
-        <div class="card">
-          <h3><a href={`/blog/${p.data.slug}/`}>{p.data.title}</a></h3>
-          <p class="muted">{p.data.excerpt}</p>
-        </div>
-      ))}
-    </div>
-  </section>
 </Base>

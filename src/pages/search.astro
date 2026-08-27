@@ -1,37 +1,45 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import { SITE, breadcrumbSchema } from '../lib/seo';
-
-const listings = await getCollection('listings');
-const posts = await getCollection('posts');
+import { breadcrumbSchema } from '../lib/seo';
 
 const schema = [
   breadcrumbSchema([
-    { name: 'Home', url: `${SITE.domain}/` },
-    { name: 'Search', url: `${SITE.domain}/search/` },
+    { name: 'Home', url: 'https://aerogela.com/' },
+    { name: 'Search', url: 'https://aerogela.com/search/' },
   ]),
 ];
 ---
 
 <Base
   title="Search"
-  description={`Search ${listings.length} aerogel suppliers and ${posts.length} knowledge base articles.`}
+  description="Search aerogela — 133 supplier listings, 35 knowledge articles and technical pages."
   path="/search/"
   noindex
   schema={schema}
 >
-  <div class="crumb"><a href="/">Home</a> / Search</div>
-  <h1>Search</h1>
-  <p class="muted">
-    Search across {listings.length} aerogel suppliers and {posts.length} knowledge base articles.
-    Filter by type, category or location.
-  </p>
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Site index</span>
+      <h1>Search the directory</h1>
+      <p class="sub">
+        Full-text search across all supplier listings, technical articles and reference pages.
+        Filter results by type, category and country.
+      </p>
+    </div>
+  </div>
 
-  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-  <div id="search"></div>
-  <noscript>
-    <p class="muted">Search requires JavaScript. Browse the <a href="/listing/">supplier directory</a> or <a href="/blog/">knowledge base</a> instead.</p>
+  <section class="section">
+    <div class="wrap">
+      <div id="search"></div>
+    </div>
+  </section>
+</Base>
+
+<noscript>
+    <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);">
+      Search requires JavaScript. Browse the <a href="/listing/">supplier directory</a> or
+      <a href="/blog/">knowledge base</a> instead.
+    </p>
   </noscript>
 
   <script is:inline>
@@ -46,30 +54,23 @@ const schema = [
             category: 'Category',
             location: 'Location',
           },
+          translations: {
+            placeholder: 'Search suppliers, materials, guides…',
+            clear_search: 'Clear',
+            load_more: 'Load more results',
+            search_label: 'Search this site',
+            zero_results: 'No results for “[SEARCH_TERM]”',
+            many_results: '[COUNT] results for “[SEARCH_TERM]”',
+            one_result: '[COUNT] result for “[SEARCH_TERM]”',
+            searching: 'Searching “[SEARCH_TERM]”…',
+          },
         });
       })
       .catch(() => {
         const el = document.querySelector('#search');
         if (el) {
           el.innerHTML =
-            '<p class="muted">The search index is generated at build time — run <code>npm run build</code> and preview the built site.</p>';
+            '<p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);">The search index is generated at build time — run <code>npm run build</code> and preview the built site.</p>';
         }
       });
   </script>
-
-  <style is:global>
-    .pagefind-ui {
-      --pagefind-ui-scale: 0.95;
-      --pagefind-ui-primary: #1f5eff;
-      --pagefind-ui-text: #17202b;
-      --pagefind-ui-background: #ffffff;
-      --pagefind-ui-border: #e6eaef;
-      --pagefind-ui-tag: #eef2ff;
-      --pagefind-ui-border-width: 1px;
-      --pagefind-ui-border-radius: 8px;
-      --pagefind-ui-image-border-radius: 8px;
-      --pagefind-ui-font: inherit;
-      margin-top: 1.25rem;
-    }
-  </style>
-</Base>

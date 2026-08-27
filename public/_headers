@@ -15,6 +15,10 @@
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 
+# 自托管字体（URL 固定，仅随构建变化，30 天缓存）
+/fonts/*
+  Cache-Control: public, max-age=2592000
+
 # Pagefind 搜索索引（每次构建内容变化，中等缓存）
 /pagefind/*
   Cache-Control: public, max-age=3600
