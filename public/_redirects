@@ -74,3 +74,9 @@
 /usa-aerogel-suppliers/  /blog/usa-aerogel-suppliers/  301
 /what-is-aerogel-insulation  /blog/what-is-aerogel-insulation/  301
 /what-is-aerogel-insulation/  /blog/what-is-aerogel-insulation/  301
+
+# WordPress 订阅源 → 新 RSS(迁移前订阅者的阅读器仍在请求)
+/feed  /rss.xml  301
+/feed/  /rss.xml  301
+/comments/feed/  /rss.xml  301
+/rss  /rss.xml  301

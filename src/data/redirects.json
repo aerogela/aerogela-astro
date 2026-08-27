@@ -35,5 +35,7 @@
   "/carbon-aerogel-vs-silica-aerogel": "/blog/carbon-aerogel-vs-silica-aerogel/",
   "/france-aerogel-suppliers": "/blog/france-aerogel-suppliers/",
   "/aerogel-subsea-offshore-insulation": "/blog/aerogel-subsea-offshore-insulation/",
-  "/home": "/"
+  "/home": "/",
+  "/feed/": "/rss.xml",
+  "/comments/feed/": "/rss.xml"
 }

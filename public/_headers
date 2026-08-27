@@ -2,6 +2,10 @@
 # 修复审计问题 A9：旧站 HSTS 被显式禁用（max-age=0 + preload 矛盾组合）
 # 首次启用 HSTS：先 6 个月、不含子域；稳定 2-4 周后再升级为
 # max-age=31536000; includeSubDomains; preload 并到 hstspreload.org 提交
+#
+# 注意：/* 规则不设 Cache-Control —— Pages 会把多条命中规则的头部
+# 逗号拼接（曾导致 CSS/字体同时收到 max-age=0 和长缓存指令）。
+# HTML 由 Cloudflare Pages 默认策略处理（must-revalidate）。
 
 /*
   Strict-Transport-Security: max-age=15552000
@@ -9,7 +13,6 @@
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Cache-Control: public, max-age=0, must-revalidate
 
 # Astro 指纹化静态资源（文件名含 hash，可永久缓存）
 /_astro/*
@@ -18,6 +21,12 @@
 # 自托管字体（URL 固定，仅随构建变化，30 天缓存）
 /fonts/*
   Cache-Control: public, max-age=2592000
+
+# hero / OG 图（URL 无指纹，内容跨构建稳定，1 天缓存）
+/heroes/*
+  Cache-Control: public, max-age=86400
+/og-default.png
+  Cache-Control: public, max-age=86400
 
 # Pagefind 搜索索引（每次构建内容变化，中等缓存）
 /pagefind/*

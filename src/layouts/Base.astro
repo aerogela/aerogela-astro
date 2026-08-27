@@ -11,7 +11,7 @@ interface Props {
   schema?: Record<string, any>[];
 }
 
-const { title, description = SITE.description, path, ogImage, noindex = false, schema = [] } =
+const { title, description = SITE.description, path, ogImage = '/og-default.png', noindex = false, schema = [] } =
   Astro.props;
 
 const fullTitle = pageTitle(title);
@@ -39,12 +39,14 @@ const year = new Date().getFullYear();
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canon} />
     <meta property="og:type" content="website" />
-    {ogImage && <meta property="og:image" content={new URL(ogImage, SITE.domain).href} />}
-    {ogImage && <meta property="og:image:width" content="1200" />}
-    {ogImage && <meta property="og:image:height" content="630" />}
-    {ogImage && <meta property="og:image:alt" content={fullTitle} />}
+    <meta property="og:image" content={new URL(ogImage, SITE.domain).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={fullTitle} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#f4f3ee" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="aerogela — knowledge base" href="/rss.xml" />
     <link
       rel="preload"
       href="/fonts/archivo-400_700-normal.woff2"
@@ -62,6 +64,7 @@ const year = new Date().getFullYear();
     <script type="application/ld+json" set:html={jsonLd} />
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="topbar">
       <div class="wrap">
         <span class="fact">The aerogel industry directory<em></em></span>
@@ -82,7 +85,7 @@ const year = new Date().getFullYear();
           </svg>
           aerogela
         </a>
-        <nav class="nav">
+        <nav class="nav" aria-label="Primary">
           <a href="/listing/">Suppliers</a>
           <a href="/blog/">Knowledge</a>
           <a href="/search/">Search</a>
@@ -91,7 +94,7 @@ const year = new Date().getFullYear();
       </div>
     </header>
 
-    <main>
+    <main id="main-content">
       <slot />
     </main>
 
