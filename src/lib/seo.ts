@@ -7,10 +7,18 @@ export const SITE = {
     'Global directory of aerogel manufacturers, suppliers and distributors. Verified aerogel blankets, silica aerogel, and insulation companies worldwide.',
 };
 
-/** 简洁标题：解决 WP 后缀冗长导致的截断问题 */
+/** 简洁标题：解决 WP 后缀冗长导致的截断问题。
+ *  超长标题(常见于博客,100+ 字符)在 SERP 被硬截断,
+ *  这里按词边界截到 ~59 字符,保留 " | aerogela" 后缀完整。 */
 export function pageTitle(t?: string): string {
   if (!t || t === SITE.name) return SITE.title;
-  return `${t} | aerogela`;
+  const suffix = ' | aerogela';
+  const budget = 70 - suffix.length;
+  if (t.length <= budget) return `${t}${suffix}`;
+  let cut = t.slice(0, budget);
+  const sp = cut.lastIndexOf(' ');
+  if (sp > budget * 0.6) cut = cut.slice(0, sp); // 词边界安全截断
+  return `${cut.replace(/[\s,;:.\-–—]+$/, '')}${suffix}`;
 }
 
 /** 绝对 canonical */

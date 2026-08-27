@@ -5,7 +5,10 @@ import { SITE, canonical, htmlToText, breadcrumbSchema } from '../lib/seo';
 
 export async function getStaticPaths() {
   const pages = await getCollection('pages');
-  return pages.map((p) => ({ params: { slug: p.data.slug }, props: { p } }));
+  // 'home' 是 WP 首页 slug,与 / 重复,走 301 而非渲染(见 redirects.json)
+  return pages
+    .filter((p) => p.data.slug !== 'home')
+    .map((p) => ({ params: { slug: p.data.slug }, props: { p } }));
 }
 
 const { p } = Astro.props;
@@ -13,6 +16,9 @@ const e = p.data;
 const path = `/${e.slug}/`;
 const url = canonical(path);
 const desc = htmlToText(e.content, 160) || SITE.description;
+// WP 内容自带首个 h1(与模板 page-head 的 h1 重复),渲染时剥离;
+// h1 前可能有 WP 块注释(<!-- wp:heading ... -->)与空白,一并容忍
+const bodyHtml = e.content.replace(/^(\s|<!--[\s\S]*?-->)*<h1[^>]*>[\s\S]*?<\/h1>/i, '');
 
 const schema = [
   breadcrumbSchema([
@@ -34,7 +40,7 @@ const schema = [
 
   <div class="wrap" style="padding-top:2.2rem;">
     <article data-pagefind-body data-pagefind-filter="type:Page">
-      <div class="prose" style="margin:0 auto;" set:html={e.content} />
+      <div class="prose" style="margin:0 auto;" set:html={bodyHtml} />
     </article>
   </div>
 </Base>

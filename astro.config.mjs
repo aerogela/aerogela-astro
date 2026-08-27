@@ -8,7 +8,10 @@ import redirects from './src/data/redirects.json';
 export default defineConfig({
   site: 'https://aerogela.com',
   trailingSlash: 'ignore',
-  integrations: [sitemap()],
+  integrations: [
+    // noindex 页面(/search/ 等)不进 sitemap
+    sitemap({ filter: (page) => !page.includes('/search/') }),
+  ],
   redirects,
   build: {
     format: 'directory',

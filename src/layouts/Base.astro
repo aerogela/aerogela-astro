@@ -31,7 +31,8 @@ const year = new Date().getFullYear();
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canon} />
+    {/* noindex 页不输出 canonical(Google 视 noindex+canonical 为冲突信号) */}
+    {!noindex && <link rel="canonical" href={canon} />}
     {noindex && <meta name="robots" content="noindex, follow" />}
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={fullTitle} />
