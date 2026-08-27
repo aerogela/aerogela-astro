@@ -46,7 +46,7 @@ const schema = [
     import('/pagefind/pagefind-ui.js')
       .then(() => {
         if (typeof window.PagefindUI !== 'function') throw new Error('PagefindUI missing');
-        new window.PagefindUI({
+        const ui = new window.PagefindUI({
           element: '#search',
           showSubResults: true,
           showImages: false,
@@ -66,6 +66,9 @@ const schema = [
             searching: 'Searching “[SEARCH_TERM]”…',
           },
         });
+        // ?q= 深链接:自动填入并执行搜索(可分享、可从其它页面带词跳转)
+        const q = new URLSearchParams(window.location.search).get('q');
+        if (q) ui.triggerSearch(q);
       })
       .catch(() => {
         const el = document.querySelector('#search');
