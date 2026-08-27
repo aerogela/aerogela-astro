@@ -15,7 +15,6 @@ const e = l.data;
 const path = `/listing/${e.slug}/`;
 const url = canonical(path);
 const desc = e.excerpt || htmlToText(e.content);
-const ogImage = e.hero ? `/wp-content/uploads/${e.hero}` : undefined;
 
 const schema = [
   listingSchema(e, url),
@@ -27,7 +26,7 @@ const schema = [
 ];
 ---
 
-<Base title={e.title} description={desc} path={path} ogImage={ogImage} schema={schema}>
+<Base title={e.title} description={desc} path={path} schema={schema}>
   <div class="page-head">
     <div class="wrap">
       <div class="crumbs">

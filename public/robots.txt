@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /wp-json/
-Disallow: /wp-content/
 Disallow: /tag/
 Disallow: /account/
 Disallow: /submit-listing/

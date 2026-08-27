@@ -22,7 +22,3 @@
 # Pagefind 搜索索引（每次构建内容变化，中等缓存）
 /pagefind/*
   Cache-Control: public, max-age=3600
-
-# WP 媒体库图片（URL 无指纹，30 天缓存 + 失效后协商）
-/wp-content/uploads/*
-  Cache-Control: public, max-age=2592000
