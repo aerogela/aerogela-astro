@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { SITE, breadcrumbSchema } from '../../lib/seo';
+
+const posts = (await getCollection('posts')).sort((a, b) =>
+  (b.data.date || '').localeCompare(a.data.date || '')
+);
+
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: 'Blog', url: `${SITE.domain}/blog/` },
+  ]),
+];
+---
+
+<Base
+  title="Aerogel Knowledge Base"
+  description="Guides and articles on aerogel insulation, silica aerogel, thermal barriers, and supplier selection."
+  path="/blog/"
+  schema={schema}
+>
+  <div class="crumb"><a href="/">Home</a> / Blog</div>
+  <h1>Knowledge Base</h1>
+  <p class="muted">{posts.length} articles on aerogel materials, applications and sourcing.</p>
+
+  <div class="card-grid">
+    {posts.map((p) => (
+      <div class="card">
+        <h3><a href={`/blog/${p.data.slug}/`}>{p.data.title}</a></h3>
+        <p class="muted">{p.data.excerpt}</p>
+      </div>
+    ))}
+  </div>
+</Base>

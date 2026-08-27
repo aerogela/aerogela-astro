@@ -1,0 +1,82 @@
+{
+  "$ref": "#/definitions/listings",
+  "definitions": {
+    "listings": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "excerpt": {
+          "type": "string"
+        },
+        "hero": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "certifications": {
+          "type": "string"
+        },
+        "verified": {
+          "type": "string"
+        },
+        "review_status": {
+          "type": "string"
+        },
+        "review_notes": {
+          "type": "string"
+        },
+        "category": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "location": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "main_products": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "application_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "slug",
+        "title",
+        "date",
+        "content"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

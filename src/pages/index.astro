@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { SITE, webSiteSchema, breadcrumbSchema, htmlToText } from '../lib/seo';
+
+const listings = (await getCollection('listings')).sort((a, b) =>
+  (b.data.date || '').localeCompare(a.data.date || '')
+);
+const posts = (await getCollection('posts')).sort((a, b) =>
+  (b.data.date || '').localeCompare(a.data.date || '')
+);
+const allPages = await getCollection('pages');
+const home = allPages.find((p) => p.data.slug === 'home');
+
+const schema = [
+  webSiteSchema(),
+  breadcrumbSchema([{ name: 'Home', url: `${SITE.domain}/` }]),
+];
+const desc = htmlToText(home?.data.content || '', 160) || SITE.description;
+---
+
+<Base title={SITE.name} description={desc} path="/" schema={schema}>
+  {home && (
+    <div class="prose" style="max-width:100%;" set:html={home.data.content} />
+  )}
+
+  <section style="margin-top:2.5rem;">
+    <h2>Latest Suppliers</h2>
+    <div class="card-grid">
+      {listings.slice(0, 12).map((l) => (
+        <div class="card">
+          <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
+          <p class="muted">{l.data.location?.[0] ?? ''}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section style="margin-top:2.5rem;">
+    <h2>From the Knowledge Base</h2>
+    <div class="card-grid">
+      {posts.slice(0, 6).map((p) => (
+        <div class="card">
+          <h3><a href={`/blog/${p.data.slug}/`}>{p.data.title}</a></h3>
+          <p class="muted">{p.data.excerpt}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>

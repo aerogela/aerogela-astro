@@ -1,0 +1,8 @@
+{
+  "slug": "claim-listing",
+  "title": "Claim Listing",
+  "date": "Fri, 08 May 2026 08:30:53 +0000",
+  "content": "<!-- wp:heading {\"level\":1} -->\n<h1>Claim Listing</h1>\n<!-- /wp:heading -->\n<!-- wp:paragraph -->\n<p>Are you the official representative of a company, supplier, distributor, laboratory, or service provider already listed on Aerogela? Use this page to request control of the existing listing instead of creating a duplicate entry.</p>\n<!-- /wp:paragraph -->\n<!-- wp:heading {\"level\":3} -->\n<h3>Before you submit</h3>\n<!-- /wp:heading -->\n<!-- wp:list -->\n<ul><li>Use a business email on your company domain whenever possible.</li><li>Add your company website and a proof link such as a team page, contact page, or profile page.</li><li>Explain your role and why you are authorized to manage the listing.</li></ul>\n<!-- /wp:list -->\n<!-- wp:heading {\"level\":3} -->\n<h3>What happens next</h3>\n<!-- /wp:heading -->\n<!-- wp:list -->\n<ul><li>Aerogela reviews your request manually.</li><li>Typical review time is 2–5 business days.</li><li>If approved, the listing can be marked as officially managed and linked to the representative account.</li></ul>\n<!-- /wp:list -->\n<!-- wp:shortcode -->[aerogela_claim_listing]<!-- /wp:shortcode -->",
+  "excerpt": "",
+  "parent": "0"
+}

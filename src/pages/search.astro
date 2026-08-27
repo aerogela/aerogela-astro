@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { SITE, breadcrumbSchema } from '../lib/seo';
+
+const listings = await getCollection('listings');
+const posts = await getCollection('posts');
+
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: 'Search', url: `${SITE.domain}/search/` },
+  ]),
+];
+---
+
+<Base
+  title="Search"
+  description={`Search ${listings.length} aerogel suppliers and ${posts.length} knowledge base articles.`}
+  path="/search/"
+  noindex
+  schema={schema}
+>
+  <div class="crumb"><a href="/">Home</a> / Search</div>
+  <h1>Search</h1>
+  <p class="muted">
+    Search across {listings.length} aerogel suppliers and {posts.length} knowledge base articles.
+    Filter by type, category or location.
+  </p>
+
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <div id="search"></div>
+  <noscript>
+    <p class="muted">Search requires JavaScript. Browse the <a href="/listing/">supplier directory</a> or <a href="/blog/">knowledge base</a> instead.</p>
+  </noscript>
+
+  <script is:inline>
+    import('/pagefind/pagefind-ui.js')
+      .then(({ PagefindUI }) => {
+        new PagefindUI({
+          element: '#search',
+          showSubResults: true,
+          showImages: false,
+          filters: {
+            type: 'Type',
+            category: 'Category',
+            location: 'Location',
+          },
+        });
+      })
+      .catch(() => {
+        const el = document.querySelector('#search');
+        if (el) {
+          el.innerHTML =
+            '<p class="muted">The search index is generated at build time — run <code>npm run build</code> and preview the built site.</p>';
+        }
+      });
+  </script>
+
+  <style is:global>
+    .pagefind-ui {
+      --pagefind-ui-scale: 0.95;
+      --pagefind-ui-primary: #1f5eff;
+      --pagefind-ui-text: #17202b;
+      --pagefind-ui-background: #ffffff;
+      --pagefind-ui-border: #e6eaef;
+      --pagefind-ui-tag: #eef2ff;
+      --pagefind-ui-border-width: 1px;
+      --pagefind-ui-border-radius: 8px;
+      --pagefind-ui-image-border-radius: 8px;
+      --pagefind-ui-font: inherit;
+      margin-top: 1.25rem;
+    }
+  </style>
+</Base>

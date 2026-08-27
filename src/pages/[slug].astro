@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import {
+  SITE, canonical, htmlToText, breadcrumbSchema,
+} from '../lib/seo';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('pages');
+  return pages.map((p) => ({ params: { slug: p.data.slug }, props: { p } }));
+}
+
+const { p } = Astro.props;
+const e = p.data;
+const path = `/${e.slug}/`;
+const url = canonical(path);
+const desc = e.excerpt || htmlToText(e.content);
+
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: e.title, url },
+  ]),
+];
+---
+
+<Base title={e.title} description={desc} path={path} schema={schema}>
+  <div class="crumb"><a href="/">Home</a> / {e.title}</div>
+  <article class="prose" data-pagefind-body data-pagefind-filter="type:Page">
+    <h1>{e.title}</h1>
+    <div set:html={e.content} />
+  </article>
+</Base>

@@ -1,0 +1,8 @@
+{
+  "slug": "contact-supplier",
+  "title": "Request Quote / Contact Supplier",
+  "date": "Fri, 08 May 2026 09:05:10 +0000",
+  "content": "<!-- wp:heading {\"level\":1} -->\n<h1>Request Quote / Contact Supplier</h1>\n<!-- /wp:heading -->\n<!-- wp:paragraph -->\n<p>Use this page to contact a supplier, manufacturer, distributor, laboratory, or service provider listed on Aerogela. For pricing requests, choose <strong>Request Quote</strong>. For broader business or technical outreach, choose <strong>Contact Supplier</strong>.</p>\n<!-- /wp:paragraph -->\n<!-- wp:heading {\"level\":3} -->\n<h3>Best practices before you send</h3>\n<!-- /wp:heading -->\n<!-- wp:list -->\n<ul><li>Identify the product, application, or service you need.</li><li>Include project timing, target market, and any quantity or sample requirements.</li><li>Use a valid business email so the supplier or Aerogela team can respond.</li></ul>\n<!-- /wp:list -->\n<!-- wp:paragraph -->\n<p>If a listing has not yet been officially claimed, Aerogela will review the request and manually route it when appropriate.</p>\n<!-- /wp:paragraph -->\n<!-- wp:shortcode -->[aerogela_contact_supplier]<!-- /wp:shortcode -->",
+  "excerpt": "",
+  "parent": "0"
+}

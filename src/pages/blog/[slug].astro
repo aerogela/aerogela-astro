@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import {
+  SITE, canonical, htmlToText, articleSchema, breadcrumbSchema,
+} from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((p) => ({ params: { slug: p.data.slug }, props: { p } }));
+}
+
+const { p } = Astro.props;
+const e = p.data;
+const path = `/blog/${e.slug}/`;
+const url = canonical(path);
+const desc = e.excerpt || htmlToText(e.content);
+const ogImage = e.hero ? `/wp-content/uploads/${e.hero}` : undefined;
+
+const schema = [
+  articleSchema(e, url),
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: 'Blog', url: `${SITE.domain}/blog/` },
+    { name: e.title, url },
+  ]),
+];
+---
+
+<Base title={e.title} description={desc} path={path} ogImage={ogImage} schema={schema}>
+  <div class="crumb">
+    <a href="/">Home</a> / <a href="/blog/">Blog</a> / {e.title}
+  </div>
+  <article class="prose" data-pagefind-body data-pagefind-filter="type:Article">
+    <h1>{e.title}</h1>
+    {e.date && <p class="muted">{new Date(e.date).toISOString().slice(0, 10)}</p>}
+    <div set:html={e.content} />
+  </article>
+</Base>

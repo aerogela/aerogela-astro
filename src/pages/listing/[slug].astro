@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import {
+  SITE, canonical, htmlToText, listingSchema, breadcrumbSchema,
+} from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const listings = await getCollection('listings');
+  return listings.map((l) => ({ params: { slug: l.data.slug }, props: { l } }));
+}
+
+const { l } = Astro.props;
+const e = l.data;
+const path = `/listing/${e.slug}/`;
+const url = canonical(path);
+const desc = e.excerpt || htmlToText(e.content);
+const ogImage = e.hero ? `/wp-content/uploads/${e.hero}` : undefined;
+
+const schema = [
+  listingSchema(e, url),
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: 'Suppliers', url: `${SITE.domain}/listing/` },
+    { name: e.title, url },
+  ]),
+];
+---
+
+<Base title={e.title} description={desc} path={path} ogImage={ogImage} schema={schema}>
+  <div class="crumb">
+    <a href="/">Home</a> / <a href="/listing/">Suppliers</a> / {e.title}
+  </div>
+  <article data-pagefind-body data-pagefind-filter="type:Supplier">
+    <h1>{e.title}</h1>
+
+    {(e.location?.length || e.category?.length) && (
+      <p class="muted loc" style="margin-bottom:1rem;">
+        {e.location?.map((l) => <span data-pagefind-filter="location">{l}</span>)}
+        {e.category?.length ? ' · ' : ''}
+        {e.category?.map((c) => <span data-pagefind-filter="category">{c}</span>)}
+      </p>
+    )}
+
+    {e.website && (
+      <p><strong>Website:</strong> <a href={e.website} rel="nofollow noopener">{e.website}</a></p>
+    )}
+    {e.certifications && (
+      <p><strong>Certifications:</strong> {e.certifications}</p>
+    )}
+    {e.main_products?.length && (
+      <p><strong>Main products:</strong> {e.main_products.join(', ')}</p>
+    )}
+    {e.application_fields?.length && (
+      <p><strong>Applications:</strong> {e.application_fields.join(', ')}</p>
+    )}
+
+    {e.content && (
+      <div class="prose" style="margin-top:1.5rem;" set:html={e.content} />
+    )}
+  </article>
+  <style>
+    .loc span + span::before { content: ', '; }
+  </style>
+</Base>

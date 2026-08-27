@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { SITE, breadcrumbSchema } from '../../lib/seo';
+import taxonomy from '../../data/taxonomy.json';
+
+export async function getStaticPaths() {
+  const cats = taxonomy.hp_listing_category || [];
+  return cats.map((c) => ({ params: { slug: c.slug }, props: { name: c.name, desc: c.desc } }));
+}
+
+const { slug } = Astro.params;
+const { name, desc } = Astro.props;
+const listings = (await getCollection('listings')).filter((l) =>
+  (l.data.category || []).includes(name)
+);
+
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: 'Suppliers', url: `${SITE.domain}/listing/` },
+    { name, url: `${SITE.domain}/listing-category/${slug}/` },
+  ]),
+];
+---
+
+<Base
+  title={`${name} Suppliers`}
+  description={desc || `Aerogel companies in the ${name} category.`}
+  path={`/listing-category/${slug}/`}
+  schema={schema}
+>
+  <div class="crumb">
+    <a href="/">Home</a> / <a href="/listing/">Suppliers</a> / {name}
+  </div>
+  <h1>{name} Suppliers</h1>
+  <p class="muted">{listings.length} companies listed.</p>
+
+  <div class="card-grid">
+    {listings.map((l) => (
+      <div class="card">
+        <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
+        <p class="muted">{l.data.location?.[0] ?? ''}</p>
+      </div>
+    ))}
+  </div>
+</Base>

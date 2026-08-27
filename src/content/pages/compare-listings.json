@@ -1,0 +1,8 @@
+{
+  "slug": "compare-listings",
+  "title": "Compare Listings",
+  "date": "Fri, 08 May 2026 10:00:01 +0000",
+  "content": "<!-- wp:heading {\"level\":1} -->\n<h1>Compare Aerogel Listings</h1>\n<!-- /wp:heading -->\n<!-- wp:paragraph -->\n<p>Select listings from archive pages using <strong>Add to Compare</strong>, then return here to compare category, location, website, products, application fields, and review status side by side.</p>\n<!-- /wp:paragraph -->\n<!-- wp:shortcode -->[aerogela_compare_listings]<!-- /wp:shortcode -->",
+  "excerpt": "",
+  "parent": "0"
+}

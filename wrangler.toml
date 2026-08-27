@@ -1,0 +1,8 @@
+# Cloudflare Pages 配置（静态站直传部署用：npx wrangler pages deploy）
+# Git 集成部署时不依赖此文件，但在 dashboard 中应使用相同参数：
+#   Build command: npm run build
+#   Build output directory: dist
+#   NODE_VERSION: 22
+name = "aerogela"
+compatibility_date = "2026-08-27"
+pages_build_output_dir = "dist"

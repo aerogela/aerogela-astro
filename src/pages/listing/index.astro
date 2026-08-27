@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { SITE, breadcrumbSchema } from '../../lib/seo';
+import taxonomy from '../../data/taxonomy.json';
+
+const listings = await getCollection('listings');
+const categories = taxonomy.hp_listing_category || [];
+
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: 'Suppliers', url: `${SITE.domain}/listing/` },
+  ]),
+];
+---
+
+<Base
+  title="Aerogel Suppliers Directory"
+  description="Browse all aerogel manufacturers, suppliers and distributors listed on aerogela."
+  path="/listing/"
+  schema={schema}
+>
+  <div class="crumb"><a href="/">Home</a> / Suppliers</div>
+  <h1>Aerogel Suppliers</h1>
+  <p class="muted">{listings.length} verified aerogel companies worldwide.</p>
+
+  <nav style="margin:1rem 0;">
+    {categories.map((c) => (
+      <a class="badge" href={`/listing-category/${c.slug}/`}>{c.name}</a>
+    ))}
+  </nav>
+
+  <div class="card-grid">
+    {listings.map((l) => (
+      <div class="card">
+        <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
+        <p class="muted">{l.data.location?.[0] ?? ''}</p>
+        <p class="muted">{l.data.main_products?.slice(0, 3).join(', ') ?? ''}</p>
+      </div>
+    ))}
+  </div>
+</Base>

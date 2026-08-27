@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /wp-json/
+Disallow: /wp-content/
+Disallow: /tag/
+Disallow: /account/
+Disallow: /submit-listing/
+Disallow: /claim-listing/
+
+Sitemap: https://aerogela.com/sitemap-index.xml

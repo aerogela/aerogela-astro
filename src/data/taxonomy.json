@@ -1,0 +1,295 @@
+{
+  "hp_listing_main_products": [
+    {
+      "name": "Aerogel Board &amp; Panel",
+      "slug": "aerogel-board-panel",
+      "desc": ""
+    },
+    {
+      "name": "Aerogel Coating &amp; Slurry",
+      "slug": "aerogel-coating-slurry",
+      "desc": ""
+    },
+    {
+      "name": "Aerogel Composite Materials",
+      "slug": "aerogel-composite-materials",
+      "desc": ""
+    },
+    {
+      "name": "Aerogel Concrete / Mortar / Plaster",
+      "slug": "aerogel-concrete-mortar-plaster",
+      "desc": ""
+    },
+    {
+      "name": "Aerogel Film &amp; Membrane",
+      "slug": "aerogel-film-membrane",
+      "desc": ""
+    },
+    {
+      "name": "Aerogel Glass",
+      "slug": "aerogel-glass",
+      "desc": ""
+    },
+    {
+      "name": "Aerogel Insulation Blanket",
+      "slug": "aerogel-insulation-blanket",
+      "desc": "Aerogel Insulation Blankets are high-performance composite materials engineered by impregnating aerogel into flexible fibrous matrices, such as glass fiber, pre-oxidized carbon fiber, or ceramic fiber. As the most commercially mature form of aerogel, these blankets combine the ultra-low thermal conductivity of silica aerogel with the mechanical strength of textile fibers. They offer superior therm"
+    },
+    {
+      "name": "Aerogel Materials Distribution",
+      "slug": "aerogel-materials-distribution",
+      "desc": ""
+    },
+    {
+      "name": "Aerogel Pipe Shell &amp; Cover",
+      "slug": "aerogel-pipe-shell-cover",
+      "desc": ""
+    },
+    {
+      "name": "Aerogel Powder &amp; Granules",
+      "slug": "aerogel-powder-granules",
+      "desc": "Aerogel Powder and Granules represent the fundamental high-porosity form of aerogel material, featuring an internal structure that is over 95% air. These particles are primarily utilized as high-performance functional additives across various industries. Available in micron-sized powders or millimeter-sized granules, they can be integrated into specialized coatings, thermal renders, and advanced p"
+    },
+    {
+      "name": "Aerogel R&amp;D and Testing Services",
+      "slug": "aerogel-rd-testing-services",
+      "desc": ""
+    },
+    {
+      "name": "Battery Thermal Pad / Cell-to-Cell Barrier",
+      "slug": "battery-thermal-pad",
+      "desc": "Specifically designed for the New Energy Vehicle (NEV) and Energy Storage System (ESS) markets, Aerogel Battery Thermal Pads are precision-engineered safety components. These pads are typically composed of thin aerogel composites reinforced with specialized flame-retardant fibers, often encapsulated in protective films to prevent dust shedding. Positioned between individual battery cells or module"
+    },
+    {
+      "name": "Laboratory Equipment &amp; Instruments",
+      "slug": "laboratory-equipment-instruments",
+      "desc": ""
+    },
+    {
+      "name": "Process Equipment &amp; Pilot Systems",
+      "slug": "process-equipment-pilot-systems",
+      "desc": ""
+    },
+    {
+      "name": "Silanes, Precursors &amp; Additives",
+      "slug": "silanes-precursors-additives",
+      "desc": ""
+    }
+  ],
+  "hp_listing_category": [
+    {
+      "name": "Aerogel Producers",
+      "slug": "aerogel-producers",
+      "desc": "Manufacturers producing silica aerogel, aerogel blankets, and related thermal insulation materials."
+    },
+    {
+      "name": "Distributors",
+      "slug": "distributors",
+      "desc": "Distributors, traders, and channel partners supplying aerogel products across key regional markets."
+    },
+    {
+      "name": "Equipment Materials",
+      "slug": "equipment-materials",
+      "desc": "Suppliers of aerogel characterization instruments, supercritical process equipment, specialty silanes, and development materials for research, pilot production, and industrial scale-up."
+    },
+    {
+      "name": "Research Services",
+      "slug": "research-services",
+      "desc": "Research institutes, testing laboratories, and technical service providers supporting aerogel development."
+    }
+  ],
+  "hp_listing_application_fields": [
+    {
+      "name": "Aerospace &amp; Defense",
+      "slug": "aerospace-defense",
+      "desc": ""
+    },
+    {
+      "name": "Building &amp; Construction",
+      "slug": "building-construction",
+      "desc": ""
+    },
+    {
+      "name": "Cold Chain &amp; Logistics",
+      "slug": "cold-chain-logistics",
+      "desc": ""
+    },
+    {
+      "name": "Electronics &amp; Semiconductors",
+      "slug": "electronics-semiconductors",
+      "desc": ""
+    },
+    {
+      "name": "EV Batteries &amp; Energy Storage",
+      "slug": "ev-batteries-energy-storage",
+      "desc": ""
+    },
+    {
+      "name": "Fire Protection &amp; Thermal Safety",
+      "slug": "fire-protection-thermal-safety",
+      "desc": ""
+    },
+    {
+      "name": "Industrial Insulation",
+      "slug": "industrial-insulation",
+      "desc": ""
+    },
+    {
+      "name": "LNG &amp; Cryogenic Systems",
+      "slug": "lng-cryogenic-systems",
+      "desc": ""
+    },
+    {
+      "name": "Materials Research &amp; Development",
+      "slug": "materials-research-development",
+      "desc": ""
+    },
+    {
+      "name": "Petrochemical &amp; Oil &amp; Gas",
+      "slug": "petrochemical-oil-gas",
+      "desc": ""
+    },
+    {
+      "name": "Process Scale-Up &amp; Manufacturing",
+      "slug": "process-scale-up-manufacturing",
+      "desc": ""
+    },
+    {
+      "name": "Testing &amp; Characterization",
+      "slug": "testing-characterization",
+      "desc": ""
+    },
+    {
+      "name": "Transportation &amp; Rail Transit",
+      "slug": "transportation-rail-transit",
+      "desc": ""
+    }
+  ],
+  "hp_listing_location": [
+    {
+      "name": "Australia",
+      "slug": "australia",
+      "desc": ""
+    },
+    {
+      "name": "Austria",
+      "slug": "austria",
+      "desc": ""
+    },
+    {
+      "name": "Belgium",
+      "slug": "belgium",
+      "desc": ""
+    },
+    {
+      "name": "Canada",
+      "slug": "canada",
+      "desc": ""
+    },
+    {
+      "name": "China",
+      "slug": "china",
+      "desc": ""
+    },
+    {
+      "name": "Denmark",
+      "slug": "denmark",
+      "desc": ""
+    },
+    {
+      "name": "Finland",
+      "slug": "finland",
+      "desc": ""
+    },
+    {
+      "name": "France",
+      "slug": "france",
+      "desc": ""
+    },
+    {
+      "name": "Germany",
+      "slug": "germany",
+      "desc": ""
+    },
+    {
+      "name": "Ireland",
+      "slug": "ireland",
+      "desc": ""
+    },
+    {
+      "name": "Italy",
+      "slug": "italy",
+      "desc": ""
+    },
+    {
+      "name": "Japan",
+      "slug": "japan",
+      "desc": ""
+    },
+    {
+      "name": "Luxembourg",
+      "slug": "luxembourg",
+      "desc": ""
+    },
+    {
+      "name": "Netherlands",
+      "slug": "netherlands",
+      "desc": ""
+    },
+    {
+      "name": "Norway",
+      "slug": "norway",
+      "desc": ""
+    },
+    {
+      "name": "Poland",
+      "slug": "poland",
+      "desc": ""
+    },
+    {
+      "name": "Portugal",
+      "slug": "portugal",
+      "desc": ""
+    },
+    {
+      "name": "Singapore",
+      "slug": "singapore",
+      "desc": ""
+    },
+    {
+      "name": "South Korea",
+      "slug": "south-korea",
+      "desc": ""
+    },
+    {
+      "name": "Spain",
+      "slug": "spain",
+      "desc": ""
+    },
+    {
+      "name": "Sweden",
+      "slug": "sweden",
+      "desc": ""
+    },
+    {
+      "name": "Switzerland",
+      "slug": "switzerland",
+      "desc": ""
+    },
+    {
+      "name": "Turkey",
+      "slug": "turkey",
+      "desc": ""
+    },
+    {
+      "name": "United Kingdom",
+      "slug": "united-kingdom",
+      "desc": ""
+    },
+    {
+      "name": "United States of America",
+      "slug": "usa",
+      "desc": ""
+    }
+  ]
+}
