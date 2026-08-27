@@ -88,7 +88,11 @@ function svgFor(post) {
     if (lines.every((l) => textWidth(l, s) <= maxW) && lines.length <= 3) break;
   }
 
-  const date = (post.date || '').replace(/-/g, '.');
+  // 日期统一为紧凑格式 2026.08.27(兼容 ISO 与 RFC 两种输入)
+  const d = new Date(post.date || '');
+  const date = isNaN(d.getTime())
+    ? (post.date || '').replace(/-/g, '.')
+    : `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${String(d.getUTCDate()).padStart(2, '0')}`;
 
   // 右侧艺术区:logo 式叠层方块(青色系,不同透明度)
   const layers = 4 + Math.floor(rand() * 3); // 4-6 层

@@ -1,0 +1,63 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { SITE, breadcrumbSchema } from '../../lib/seo';
+import taxonomy from '../../data/taxonomy.json';
+
+export async function getStaticPaths() {
+  const locs = taxonomy.hp_listing_location || [];
+  return locs.map((c) => ({ params: { slug: c.slug }, props: { name: c.name, desc: c.desc } }));
+}
+
+const { slug } = Astro.params;
+const { name, desc } = Astro.props;
+const listings = (await getCollection('listings'))
+  .sort((a, b) => (b.data.date || '').localeCompare(a.data.date || ''))
+  .filter((l) => (l.data.location || []).includes(name));
+
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: 'Suppliers', url: `${SITE.domain}/listing/` },
+    { name, url: `${SITE.domain}/listing-location/${slug}/` },
+  ]),
+];
+---
+
+<Base
+  title={`Aerogel Suppliers in ${name}`}
+  description={desc || `Aerogel manufacturers, producers, and distributors based in ${name} — verified listings on aerogela.`}
+  path={`/listing-location/${slug}/`}
+  schema={schema}
+>
+  <div class="page-head">
+    <div class="wrap">
+      <div class="crumbs">
+        <a href="/">Home</a><span class="crumb-sep">/</span><a href="/listing/">Suppliers</a><span class="crumb-sep">/</span>{name}
+      </div>
+      <span class="eyebrow">Directory</span>
+      <h1>Aerogel Suppliers in {name}</h1>
+      <p class="sub">{desc || `Aerogel producers, manufacturers, and distributors based in ${name}.`}</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="wrap">
+      <p style="font-family:var(--font-mono);font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:0 0 1.4rem;">
+        {listings.length} listing{listings.length === 1 ? '' : 's'} in this country
+      </p>
+      <div class="cards">
+        {listings.map((l, i) => (
+          <article class="card">
+            <span class="no">No. {String(listings.length - i).padStart(3, '0')}</span>
+            <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
+            <span class="loc">{l.data.location?.[0] ?? 'Worldwide'}</span>
+            <div class="tags">
+              {(l.data.main_products ?? []).slice(0, 2).map((c) => <span class="tag">{c}</span>)}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
