@@ -31,21 +31,22 @@ const schema = [
   <section class="section">
     <div class="wrap">
       <div id="search"></div>
+      <noscript>
+        <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);">
+          Search requires JavaScript. Browse the <a href="/listing/">supplier directory</a> or
+          <a href="/blog/">knowledge base</a> instead.
+        </p>
+      </noscript>
     </div>
   </section>
-</Base>
-
-<noscript>
-    <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);">
-      Search requires JavaScript. Browse the <a href="/listing/">supplier directory</a> or
-      <a href="/blog/">knowledge base</a> instead.
-    </p>
-  </noscript>
 
   <script is:inline>
+    // Pagefind 1.5 的 pagefind-ui.js 是 IIFE 构建,挂载到 window.PagefindUI
+    // (不是 ES module 导出),因此不能从 import() 解构,需读全局
     import('/pagefind/pagefind-ui.js')
-      .then(({ PagefindUI }) => {
-        new PagefindUI({
+      .then(() => {
+        if (typeof window.PagefindUI !== 'function') throw new Error('PagefindUI missing');
+        new window.PagefindUI({
           element: '#search',
           showSubResults: true,
           showImages: false,
@@ -74,3 +75,4 @@ const schema = [
         }
       });
   </script>
+</Base>
