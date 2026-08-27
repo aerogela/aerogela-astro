@@ -37,6 +37,18 @@ const schema = [
       <div class="cards">
         {posts.map((p) => (
           <article class="card">
+            {p.data.hero && (
+              <a class="card-hero" href={`/blog/${p.data.slug}/`} aria-hidden="true" tabindex="-1">
+                <img
+                  src={`${p.data.hero}.webp`}
+                  alt=""
+                  width="600"
+                  height="315"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+            )}
             <span class="no">{new Date(p.data.date).toISOString().slice(0, 10)}</span>
             <h3><a href={`/blog/${p.data.slug}/`}>{p.data.title}</a></h3>
             {p.data.excerpt && <p class="exc">{p.data.excerpt}</p>}

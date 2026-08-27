@@ -15,7 +15,7 @@ const e = p.data;
 const path = `/blog/${e.slug}/`;
 const url = canonical(path);
 const desc = e.excerpt || htmlToText(e.content);
-const ogImage = e.hero ? `/wp-content/uploads/${e.hero}` : undefined;
+const ogImage = e.hero ? `${e.hero}.png` : undefined;
 
 const schema = [
   articleSchema(e, url),
@@ -24,7 +24,11 @@ const schema = [
     { name: 'Knowledge', url: `${SITE.domain}/blog/` },
     { name: e.title, url },
   ]),
-];
+].map((s) =>
+  s['@type'] === 'Article' && e.hero
+    ? { ...s, image: [new URL(`${e.hero}.png`, SITE.domain).href] }
+    : s
+);
 
 const words = htmlToText(e.content).split(/\s+/).length;
 const mins = Math.max(1, Math.round(words / 220));
@@ -44,6 +48,21 @@ const mins = Math.max(1, Math.round(words / 220));
   <div class="wrap">
     <article style="max-width:47rem;margin:0 auto;padding-top:2.2rem;">
       <div data-pagefind-body data-pagefind-filter="type:Article">
+        {e.hero && (
+          <figure class="art-hero">
+            <picture>
+              <source srcset={`${e.hero}.webp`} type="image/webp" />
+              <img
+                src={`${e.hero}.png`}
+                alt={`${e.title} — aerogel technical guide cover`}
+                width="1200"
+                height="630"
+                fetchpriority="high"
+                decoding="async"
+              />
+            </picture>
+          </figure>
+        )}
         <div class="art-meta">
           <span class="dt">{new Date(e.date).toISOString().slice(0, 10)}</span>
           <span class="rd">{mins} min read</span>
