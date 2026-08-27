@@ -16,6 +16,17 @@ const path = `/listing/${e.slug}/`;
 const url = canonical(path);
 const desc = e.excerpt || htmlToText(e.content);
 
+// 目录站外链策略统一:正文中的供应商官网链接补 nofollow(与侧栏一致,
+// 避免被搜索引擎视为链接农场;博客 DOI 引用链接保持 follow 不受影响)
+const contentHtml = e.content.replace(
+  /<a\s([^>]*href="https?:\/\/(?!aerogela\.com)[^"]*"[^>]*)>/gi,
+  (m, attrs) => {
+    if (/nofollow/i.test(attrs)) return m;
+    if (/rel="[^"]*"/i.test(attrs)) return m.replace(/rel="([^"]*)"/i, 'rel="nofollow $1"');
+    return `<a ${attrs} rel="nofollow noopener">`;
+  }
+);
+
 const schema = [
   listingSchema(e, url),
   breadcrumbSchema([
@@ -50,7 +61,7 @@ const schema = [
             {e.location?.map((l) => <span data-pagefind-filter="location">{l}</span>)}
             {e.category?.map((c) => <span data-pagefind-filter="category">{c}</span>)}
           </span>
-          <div class="prose" set:html={e.content} />
+          <div class="prose" set:html={contentHtml} />
         </article>
       </div>
 

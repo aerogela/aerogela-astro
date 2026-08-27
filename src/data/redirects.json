@@ -37,5 +37,6 @@
   "/aerogel-subsea-offshore-insulation": "/blog/aerogel-subsea-offshore-insulation/",
   "/home": "/",
   "/feed/": "/rss.xml",
-  "/comments/feed/": "/rss.xml"
+  "/comments/feed/": "/rss.xml",
+  "/listings/": "/listing/"
 }
