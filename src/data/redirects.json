@@ -38,5 +38,6 @@
   "/home": "/",
   "/feed/": "/rss.xml",
   "/comments/feed/": "/rss.xml",
-  "/listings/": "/listing/"
+  "/listings/": "/listing/",
+  "/submit-listing/": "/submit-a-listing/"
 }

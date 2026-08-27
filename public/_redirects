@@ -80,3 +80,7 @@
 /feed/  /rss.xml  301
 /comments/feed/  /rss.xml  301
 /rss  /rss.xml  301
+
+# 搜索引擎已收录的旧 URL(Bing 数据发现)返回 404,恢复权重
+/submit-listing  /submit-a-listing/  301
+/submit-listing/  /submit-a-listing/  301
