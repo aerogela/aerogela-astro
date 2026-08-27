@@ -9,6 +9,18 @@ const listings = (await getCollection('listings')).sort((a, b) =>
 );
 const categories = taxonomy.hp_listing_category || [];
 
+// 国家目录:只显示实际有收录的国家(与 /listing-location/ 生成规则一致)
+const counts = new Map();
+for (const l of listings) {
+  for (const loc of l.data.location || []) {
+    counts.set(loc, (counts.get(loc) || 0) + 1);
+  }
+}
+const countries = (taxonomy.hp_listing_location || [])
+  .map((c) => ({ ...c, n: counts.get(c.name) || 0 }))
+  .filter((c) => c.n > 0)
+  .sort((a, b) => b.n - a.n);
+
 const schema = [
   breadcrumbSchema([
     { name: 'Home', url: `${SITE.domain}/` },
@@ -40,6 +52,12 @@ const schema = [
       <div class="chips">
         <a class="chip" href="/listing/">All · {listings.length}</a>
         {categories.map((c) => <a class="chip" href={`/listing-category/${c.slug}/`}>{c.name}</a>)}
+      </div>
+
+      <div class="chips" style="margin-top:0.8rem;">
+        {countries.map((c) => (
+          <a class="chip" href={`/listing-location/${c.slug}/`}>{c.name} · {c.n}</a>
+        ))}
       </div>
 
       <div class="cards">

@@ -3,10 +3,20 @@ import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { SITE, breadcrumbSchema } from '../../lib/seo';
 import taxonomy from '../../data/taxonomy.json';
+import intros from '../../data/country-intro.json';
 
+// 只为实际有供应商收录的国家生成页面(避免空目录页/薄内容)
 export async function getStaticPaths() {
-  const locs = taxonomy.hp_listing_location || [];
-  return locs.map((c) => ({ params: { slug: c.slug }, props: { name: c.name, desc: c.desc } }));
+  const listings = await getCollection('listings');
+  const counts = new Map();
+  for (const l of listings) {
+    for (const loc of l.data.location || []) {
+      counts.set(loc, (counts.get(loc) || 0) + 1);
+    }
+  }
+  return (taxonomy.hp_listing_location || [])
+    .filter((c) => counts.get(c.name) > 0)
+    .map((c) => ({ params: { slug: c.slug }, props: { name: c.name, desc: c.desc } }));
 }
 
 const { slug } = Astro.params;
@@ -15,18 +25,21 @@ const listings = (await getCollection('listings'))
   .sort((a, b) => (b.data.date || '').localeCompare(a.data.date || ''))
   .filter((l) => (l.data.location || []).includes(name));
 
+const intro = intros[slug] || '';
+const url = `${SITE.domain}/listing-location/${slug}/`;
+
 const schema = [
   breadcrumbSchema([
     { name: 'Home', url: `${SITE.domain}/` },
     { name: 'Suppliers', url: `${SITE.domain}/listing/` },
-    { name, url: `${SITE.domain}/listing-location/${slug}/` },
+    { name, url },
   ]),
 ];
 ---
 
 <Base
   title={`Aerogel Suppliers in ${name}`}
-  description={desc || `Aerogel manufacturers, producers, and distributors based in ${name} — verified listings on aerogela.`}
+  description={desc || intro.replace(/<[^>]+>/g, '').slice(0, 155) || `Aerogel manufacturers, producers, and distributors based in ${name} — ${listings.length} verified listings on aerogela.`}
   path={`/listing-location/${slug}/`}
   schema={schema}
 >
@@ -37,7 +50,7 @@ const schema = [
       </div>
       <span class="eyebrow">Directory</span>
       <h1>Aerogel Suppliers in {name}</h1>
-      <p class="sub">{desc || `Aerogel producers, manufacturers, and distributors based in ${name}.`}</p>
+      <p class="sub">{desc || `${listings.length} verified aerogel listings based in ${name}.`}</p>
     </div>
   </div>
 
@@ -46,6 +59,9 @@ const schema = [
       <p style="font-family:var(--font-mono);font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:0 0 1.4rem;">
         {listings.length} listing{listings.length === 1 ? '' : 's'} in this country
       </p>
+
+      {intro && <div class="prose" style="max-width:47rem;margin:0 0 2rem;" set:html={intro} />}
+
       <div class="cards">
         {listings.map((l, i) => (
           <article class="card">
