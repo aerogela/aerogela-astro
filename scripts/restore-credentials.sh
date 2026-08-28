@@ -27,8 +27,8 @@ Host github.com
 EOF
 chmod 600 ~/.ssh/config
 
-# known_hosts(失败不阻断)
-timeout 15 ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+# known_hosts:通过代理(而非直连 22 端口)自动获取 GitHub host key
+timeout 20 ssh -o StrictHostKeyChecking=accept-new -T git@github.com 2>/dev/null || true
 
 echo "✓ SSH 密钥已恢复: $(ssh-keygen -lf ~/.ssh/id_ed25519.pub)"
 echo "✓ Cloudflare Token: $CRED/cloudflare-token.txt"
