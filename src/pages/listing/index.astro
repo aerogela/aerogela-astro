@@ -31,7 +31,7 @@ const schema = [
 
 <Base
   title="Aerogel Suppliers Directory"
-  description="Browse all aerogel manufacturers, suppliers and distributors — verified listings across 25 countries, filterable by category and region."
+  description={`Browse all aerogel manufacturers, suppliers and distributors — verified listings across ${countries.length} countries, filterable by category and region.`}
   path="/listing/"
   schema={schema}
 >
@@ -60,9 +60,23 @@ const schema = [
         ))}
       </div>
 
-      <div class="cards">
+      <div class="dir-tools">
+        <label class="dir-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.8-3.8"></path>
+          </svg>
+          <input id="dir-q" type="search" placeholder="Filter by company, product or country…" autocomplete="off" aria-label="Filter suppliers" />
+        </label>
+        <button id="dir-clear" class="dir-clear" type="button" hidden>Clear</button>
+        <span id="dir-count" class="dir-count" aria-live="polite">{listings.length} / {listings.length}</span>
+      </div>
+
+      <div class="cards dir-cards">
         {listings.map((l, i) => (
-          <article class="card">
+          <article
+            class="card"
+            data-search={[l.data.title, ...(l.data.location || []), ...(l.data.category || []), ...(l.data.main_products || [])].join(' ').toLowerCase()}
+          >
             <span class="no">No. {String(listings.length - i).padStart(3, '0')}</span>
             <h3><a href={`/listing/${l.data.slug}/`}>{l.data.title}</a></h3>
             <span class="loc">{l.data.location?.[0] ?? 'Worldwide'}</span>
@@ -74,7 +88,39 @@ const schema = [
             ) : null}
           </article>
         ))}
+        <p id="dir-empty" class="dir-empty" hidden>No suppliers match — try a shorter term or clear the filter.</p>
       </div>
     </div>
   </section>
+
+  <noscript><style>.dir-tools { display: none; }</style></noscript>
+  <script>
+    const q = document.getElementById('dir-q');
+    const cards = Array.from(document.querySelectorAll('.dir-cards .card'));
+    const count = document.getElementById('dir-count');
+    const clear = document.getElementById('dir-clear');
+    const empty = document.getElementById('dir-empty');
+    const total = cards.length;
+
+    function apply(value) {
+      const t = value.trim().toLowerCase();
+      let n = 0;
+      for (const c of cards) {
+        const hit = !t || (c.dataset.search || '').includes(t);
+        c.hidden = !hit;
+        if (hit) n++;
+      }
+      count.textContent = `${n} / ${total}`;
+      clear.hidden = !t;
+      empty.hidden = n !== 0;
+      const url = new URL(location.href);
+      if (t) url.searchParams.set('q', t); else url.searchParams.delete('q');
+      history.replaceState(null, '', url);
+    }
+
+    q.addEventListener('input', () => apply(q.value));
+    clear.addEventListener('click', () => { q.value = ''; apply(''); q.focus(); });
+    const init = new URLSearchParams(location.search).get('q');
+    if (init) { q.value = init; apply(init); }
+  </script>
 </Base>
