@@ -39,7 +39,7 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
   margin: 0;
@@ -124,7 +124,11 @@ h1, h2, h3, h4 {
 .topbar a { color: var(--amber); }
 .topbar a:hover { color: #f5a35a; }
 .topbar .sep { margin: 0 0.7rem; opacity: 0.35; }
-@media (max-width: 720px) { .topbar .fact { display: none; } }
+@media (max-width: 720px) {
+  /* 只隐藏左侧标语,保留 Submit a listing 入口并居中,避免整条顶栏被清空 */
+  .topbar .fact:first-child { display: none; }
+  .topbar .wrap { justify-content: center; }
+}
 
 /* ---------- header ---------- */
 .site-header {
@@ -257,7 +261,8 @@ h1, h2, h3, h4 {
 /* ---------- cards ---------- */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  /* min(100%,300px):容器窄于 300px(如 320px 手机)时轨道收缩,避免横向溢出 */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 1rem;
 }
 .card {
@@ -544,8 +549,34 @@ main { min-height: 55vh; padding-bottom: 4rem; }
   .sheet-aside { position: static; order: -1; }
   .foot-grid { grid-template-columns: 1fr 1fr; }
 }
+/* 迁移自 WP 的宽表格:窄屏改为块级 + 横向滚动,避免单元格挤压成竖条 */
+@media (max-width: 720px) {
+  .prose table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
 @media (max-width: 640px) {
   .hero { padding: 3rem 0 2.6rem; }
   .stats { gap: 1.6rem; }
   .foot-grid { grid-template-columns: 1fr; gap: 1.8rem; }
+
+  /* 触控目标:导航链接撑到 44px 高(WCAG 2.5.5 / 移动端惯例) */
+  .nav a { display: inline-flex; align-items: center; min-height: 44px; }
+
+  /* 筛选 chip 增大触控面积 */
+  .chip { padding: 0.55rem 0.95rem; }
+  .dir-clear { padding: 0.6rem 1rem; }
+
+  /* 输入框字号 ≥16px,阻止 iOS Safari 聚焦自动放大页面 */
+  .dir-search input { font-size: 1rem; }
+  .pagefind-ui { --pagefind-ui-scale: 1; }
+
+  /* 长 URL 换行,防止正文横向溢出 */
+  .prose a { overflow-wrap: anywhere; }
+
+  /* 收窄页边距,320px 屏多出 ~13px 内容宽度 */
+  .wrap { padding: 0 1.1rem; }
+  .section { padding: 2.5rem 0; }
 }
