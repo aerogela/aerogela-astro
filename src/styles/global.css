@@ -470,18 +470,262 @@ main { min-height: 55vh; padding-bottom: 4rem; }
 .art-meta .dt::before { content: "◍ "; color: var(--amber); }
 .art-meta .rd::before { content: "≈ "; color: var(--teal); }
 
-/* ---------- pagefind theme ---------- */
+/* ---------- pagefind 搜索页定制 ---------- */
+/* 双类选择器(.pagefind-ui .pagefind-ui__*)提升特异性:
+   pagefind 运行时注入的样式表晚于本表加载,单类会被覆盖 */
+.search-hero { max-width: 54rem; margin: 0 auto; }
 .pagefind-ui {
-  --pagefind-ui-scale: 0.92;
+  --pagefind-ui-scale: 1;
   --pagefind-ui-primary: var(--teal);
   --pagefind-ui-text: var(--ink);
   --pagefind-ui-background: var(--surface);
   --pagefind-ui-border: var(--line);
   --pagefind-ui-tag: var(--teal-wash);
   --pagefind-ui-border-width: 1px;
-  --pagefind-ui-border-radius: 8px;
+  --pagefind-ui-border-radius: 12px;
   --pagefind-ui-font: var(--font-body);
-  margin-top: 1.5rem;
+  margin: 0;
+}
+
+/* 命令栏:大号搜索框 + 内嵌放大镜图标 */
+.pagefind-ui .pagefind-ui__search-input {
+  flex: 1;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1.06rem;
+  line-height: 1.4;
+  color: var(--ink);
+  padding: 1.05rem 1rem 1.05rem 3rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='none' stroke='%2367717e' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.8-3.8'/%3E%3C/svg%3E") no-repeat left 0.95rem center;
+  box-shadow: var(--shadow-1);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.pagefind-ui .pagefind-ui__search-input::placeholder { color: var(--muted); }
+.pagefind-ui .pagefind-ui__search-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px var(--teal-wash), var(--shadow-1);
+  background-color: var(--surface);
+}
+.pagefind-ui .pagefind-ui__search-clear {
+  flex: none;
+  margin-left: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.62rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.pagefind-ui .pagefind-ui__search-clear:hover { border-color: var(--teal); background: var(--teal-wash); }
+
+/* 过滤器:折叠为胶囊开关,选项渲染为可选 chips */
+.pagefind-ui .pagefind-ui__filter-panel {
+  border: none;
+  padding: 0;
+  margin: 1.3rem 0 0;
+}
+.pagefind-ui .pagefind-ui__filter-panel-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0;
+  float: left;
+  margin: 0.75rem 0.9rem 0 0;
+}
+.pagefind-ui .pagefind-ui__filter-name {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.52rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+.pagefind-ui .pagefind-ui__filter-name::-webkit-details-marker { display: none; }
+.pagefind-ui .pagefind-ui__filter-name::after { content: "▾"; color: var(--muted); font-size: 0.82em; }
+.pagefind-ui details.pagefind-ui__filter-block[open] > .pagefind-ui__filter-name {
+  border-color: var(--teal);
+  color: var(--teal-deep);
+  background: var(--teal-wash);
+}
+.pagefind-ui details.pagefind-ui__filter-block[open] > .pagefind-ui__filter-name::after { transform: rotate(180deg); }
+.pagefind-ui .pagefind-ui__filter-group {
+  border: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  max-width: 44rem;
+}
+.pagefind-ui .pagefind-ui__filter-group-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.pagefind-ui .pagefind-ui__filter-checkbox { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.pagefind-ui .pagefind-ui__filter-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.42rem 0.85rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+.pagefind-ui .pagefind-ui__filter-label:hover { border-color: var(--teal); color: var(--teal-deep); }
+.pagefind-ui .pagefind-ui__filter-checkbox:checked + .pagefind-ui__filter-label {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+.pagefind-ui .pagefind-ui__filter-checkbox:focus-visible + .pagefind-ui__filter-label {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+/* 结果:卡片化 + 顶部 teal 条 + 命中词琥珀高亮 */
+.pagefind-ui .pagefind-ui__results {
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.8rem;
+}
+.pagefind-ui .pagefind-ui__results-count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pagefind-ui .pagefind-ui__result {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 1.05rem 1.2rem;
+  overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pagefind-ui .pagefind-ui__result::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-wash));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.pagefind-ui .pagefind-ui__result:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); border-color: #d4d2c6; }
+.pagefind-ui .pagefind-ui__result:hover::before { transform: scaleX(1); }
+.pagefind-ui .pagefind-ui__result-title { margin: 0; }
+.pagefind-ui .pagefind-ui__result-link {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.04rem;
+  line-height: 1.35;
+  color: var(--ink);
+  text-decoration: none;
+}
+.pagefind-ui .pagefind-ui__result-link:hover {
+  color: var(--teal-deep);
+  text-decoration: underline;
+  text-decoration-color: rgba(13, 118, 132, 0.4);
+  text-underline-offset: 3px;
+}
+.pagefind-ui .pagefind-ui__result-excerpt {
+  margin: 0.45rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.pagefind-ui mark {
+  background: rgba(224, 123, 31, 0.16);
+  color: var(--amber-deep);
+  padding: 0 0.15em;
+  border-radius: 3px;
+}
+.pagefind-ui .pagefind-ui__message {
+  margin: 1.4rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pagefind-ui .pagefind-ui__button {
+  margin-top: 1.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--teal);
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.3rem;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.15s ease;
+}
+.pagefind-ui .pagefind-ui__button:hover { background: var(--teal-deep); transform: translateY(-1px); }
+
+/* 搜索页辅助元素 */
+.search-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 1.1rem; }
+.sc-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.search-chips .chip { cursor: pointer; }
+.search-chips .chip:active { transform: scale(0.97); }
+.search-meta {
+  margin: 1.1rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.search-meta kbd {
+  font-family: var(--font-mono);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0.02rem 0.4rem;
+  background: var(--surface);
+  color: var(--ink-2);
 }
 
 /* ---------- footer ---------- */

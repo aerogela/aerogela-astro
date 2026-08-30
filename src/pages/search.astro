@@ -1,6 +1,9 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { breadcrumbSchema } from '../lib/seo';
+
+const [listings, posts] = await Promise.all([getCollection('listings'), getCollection('posts')]);
 
 const schema = [
   breadcrumbSchema([
@@ -8,11 +11,20 @@ const schema = [
     { name: 'Search', url: 'https://aerogela.com/search/' },
   ]),
 ];
+
+const POPULAR = [
+  'aerogel blanket',
+  'EV battery',
+  'cryogenic',
+  'price',
+  'fire protection',
+  'thermal conductivity',
+];
 ---
 
 <Base
   title="Search"
-  description="Search aerogela — 133 supplier listings, 35 knowledge articles and technical pages."
+  description={`Search aerogela — ${listings.length} supplier listings, ${posts.length} knowledge articles and technical pages.`}
   path="/search/"
   noindex
   schema={schema}
@@ -30,13 +42,28 @@ const schema = [
 
   <section class="section">
     <div class="wrap">
-      <div id="search"></div>
-      <noscript>
-        <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);">
-          Search requires JavaScript. Browse the <a href="/listing/">supplier directory</a> or
-          <a href="/blog/">knowledge base</a> instead.
+      <div class="search-hero">
+        <div id="search"></div>
+
+        <div class="search-chips" id="search-chips">
+          <span class="sc-label">Popular</span>
+          {POPULAR.map((t) => (
+            <button class="chip" type="button" data-q={t}>{t}</button>
+          ))}
+        </div>
+
+        <p class="search-meta">
+          {listings.length} supplier listings · {posts.length} knowledge articles · index rebuilt
+          on every deploy · press <kbd>/</kbd> to focus
         </p>
-      </noscript>
+
+        <noscript>
+          <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);">
+            Search requires JavaScript. Browse the <a href="/listing/">supplier directory</a> or
+            <a href="/blog/">knowledge base</a> instead.
+          </p>
+        </noscript>
+      </div>
     </div>
   </section>
 
@@ -60,7 +87,7 @@ const schema = [
             clear_search: 'Clear',
             load_more: 'Load more results',
             search_label: 'Search this site',
-            zero_results: 'No results for “[SEARCH_TERM]”',
+            zero_results: 'No results for “[SEARCH_TERM]” — try a shorter term, or browse the directory instead.',
             many_results: '[COUNT] results for “[SEARCH_TERM]”',
             one_result: '[COUNT] result for “[SEARCH_TERM]”',
             searching: 'Searching “[SEARCH_TERM]”…',
@@ -69,6 +96,21 @@ const schema = [
         // ?q= 深链接:自动填入并执行搜索(可分享、可从其它页面带词跳转)
         const q = new URLSearchParams(window.location.search).get('q');
         if (q) ui.triggerSearch(q);
+
+        // 热门搜索 chips:一键触发查询
+        document.querySelectorAll('#search-chips [data-q]').forEach((c) => {
+          c.addEventListener('click', () => ui.triggerSearch(c.dataset.q));
+        });
+
+        // "/" 快捷键聚焦搜索框(输入态除外)
+        document.addEventListener('keydown', (e) => {
+          const tag = (document.activeElement && document.activeElement.tagName) || '';
+          if (e.key === '/' && !/^(input|textarea|select)$/i.test(tag)) {
+            e.preventDefault();
+            const input = document.querySelector('.pagefind-ui__search-input');
+            if (input) input.focus();
+          }
+        });
       })
       .catch(() => {
         const el = document.querySelector('#search');
