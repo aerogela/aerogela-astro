@@ -97,6 +97,26 @@ const POPULAR = [
         const q = new URLSearchParams(window.location.search).get('q');
         if (q) ui.triggerSearch(q);
 
+        // 把热门词与统计行移入表单、插到结果抽屉之前
+        // (结果在 #search 容器内渲染,不移动的话 chips/meta 会被推到全部结果之后)
+        const form = document.querySelector('.pagefind-ui__form');
+        const drawer = document.querySelector('.pagefind-ui__drawer');
+        const chips = document.getElementById('search-chips');
+        const meta = document.querySelector('.search-meta');
+        if (form && drawer && chips && meta) {
+          form.insertBefore(meta, drawer);
+          form.insertBefore(chips, meta);
+          // svelte 重渲染可能移除外来节点:每次搜索后检查并归位
+          const keep = () => {
+            if (chips.parentElement !== form) {
+              form.insertBefore(meta, drawer);
+              form.insertBefore(chips, meta);
+            }
+          };
+          document.querySelector('.pagefind-ui__search-input')?.addEventListener('input', keep);
+          window.setTimeout(keep, 300);
+        }
+
         // 热门搜索 chips:一键触发查询
         document.querySelectorAll('#search-chips [data-q]').forEach((c) => {
           c.addEventListener('click', () => ui.triggerSearch(c.dataset.q));
