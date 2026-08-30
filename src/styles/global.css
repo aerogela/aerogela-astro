@@ -499,8 +499,8 @@ main { min-height: 55vh; padding-bottom: 4rem; }
   line-height: 1.4;
   color: var(--ink);
   padding: 1.05rem 1rem 1.05rem 3rem;
-  /* 右侧为悬浮 Clear(72px 宽 + 0.55rem 边距)留空间,压过行内 74px */
-  padding-right: 86px !important;
+  /* 右侧为悬浮 Clear(74px 宽 + 0.6rem 边距 + 8px 呼吸空间)留空间,压过行内 74px */
+  padding-right: 92px !important;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='none' stroke='%2367717e' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.8-3.8'/%3E%3C/svg%3E") no-repeat left 0.95rem center;
@@ -518,26 +518,42 @@ main { min-height: 55vh; padding-bottom: 4rem; }
 }
 .pagefind-ui .pagefind-ui__search-clear {
   position: absolute;
-  top: 0;
-  right: 0.55rem;
-  /* 高度与输入框严格一致(输入框 = 1.05rem×2 padding + 23.7px 行高 + 2px 边框),
-     两处样式在同一 CSS 块内,调整时保持同步 */
-  height: 59px;
+  /* 垂直居中于输入框(输入框 59px 高,按钮 37px → top = (59-37)/2)。
+     不能用 top:50%:form 内还包含 chips/meta/drawer,50% 是整个组件的中点。
+     两处样式在同一 CSS 块内,调整输入框 padding 时保持同步 */
+  top: 11px;
+  right: 0.6rem;
+  height: 37px;
   display: inline-flex;
   align-items: center;
+  gap: 0.35em;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--teal-deep);
-  background: var(--teal-wash);
+  color: var(--ink-2);
+  background: transparent;
   border: 1px solid transparent;
   border-radius: 999px;
-  padding: 0 1rem;
+  padding: 0 0.65rem;
   cursor: pointer;
-  transition: border-color 0.18s ease, background 0.18s ease;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
-.pagefind-ui .pagefind-ui__search-clear:hover { border-color: var(--teal); background: var(--teal-wash); }
+.pagefind-ui .pagefind-ui__search-clear::before {
+  content: "\00d7";
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.pagefind-ui .pagefind-ui__search-clear:hover,
+.pagefind-ui .pagefind-ui__search-clear:focus-visible {
+  color: var(--teal-deep);
+  border-color: var(--teal);
+  background: var(--teal-wash);
+}
+.pagefind-ui .pagefind-ui__search-clear:focus-visible { outline: none; }
+.pagefind-ui .pagefind-ui__search-clear:active { transform: translateY(1px); }
+/* 空查询时隐藏 Clear(配合 search.astro 的 has-query 同步) */
+.pagefind-ui:not(.has-query) .pagefind-ui__search-clear { display: none; }
 
 /* 过滤器:折叠为胶囊开关,选项渲染为可选 chips */
 .pagefind-ui .pagefind-ui__filter-panel {

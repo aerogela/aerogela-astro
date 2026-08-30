@@ -117,6 +117,23 @@ const POPULAR = [
           window.setTimeout(keep, 300);
         }
 
+        // 空查询时隐藏 Clear(pagefind 原生始终显示,空字段没有可清除的内容)。
+        // 监听挂在容器上冒泡捕获 input 事件,svelte 重渲染替换输入框后依然有效
+        const root = document.querySelector('.pagefind-ui');
+        const syncClear = () => {
+          const input = document.querySelector('.pagefind-ui__search-input');
+          root?.classList.toggle('has-query', !!(input && input.value.trim()));
+        };
+        document.getElementById('search')?.addEventListener('input', syncClear);
+        // pagefind 的 Clear 点击是编程清空,不触发 input 事件,需在点击后再同步
+        document.getElementById('search')?.addEventListener('click', (e) => {
+          if (e.target instanceof Element && e.target.closest('.pagefind-ui__search-clear')) {
+            window.setTimeout(syncClear, 50);
+          }
+        });
+        syncClear();
+        window.setTimeout(syncClear, 300); // ?q= 深链填充后再同步一次
+
         // 热门搜索 chips:一键触发查询
         document.querySelectorAll('#search-chips [data-q]').forEach((c) => {
           c.addEventListener('click', () => ui.triggerSearch(c.dataset.q));
