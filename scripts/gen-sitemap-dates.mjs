@@ -16,20 +16,30 @@ import { existsSync, readdirSync, statSync, writeFileSync, mkdirSync } from 'nod
 import { join } from 'node:path';
 
 const ROOT = new URL('..', import.meta.url).pathname;
+const DATES_FILE = 'src/data/sitemap-dates.json';
+const hasDates = () => existsSync(join(ROOT, DATES_FILE));
 
-// —— 浅克隆守卫(必须在实际生成逻辑之前)——
+// —— 环境守卫(必须在实际生成逻辑之前)——
+// 日期文件由本地全量 git 历史生成并随内容提交;任何无法还原逐文件历史的环境
+// (CI 无 .git / 浅克隆)一律沿用入库版本,避免日期退化为同一部署时间。
 try {
-  const shallow = execSync('git rev-parse --is-shallow-clone', { cwd: ROOT })
-    .toString().trim() === 'true';
-  if (shallow && existsSync(join(ROOT, 'src/data/sitemap-dates.json'))) {
-    console.log('[sitemap-dates] 浅克隆环境,沿用仓库已提交的日期文件(CI 不重新生成)');
+  execSync('git rev-parse --git-dir', { cwd: ROOT, stdio: 'pipe' });
+  const shallow = execSync('git rev-parse --is-shallow-clone', { cwd: ROOT }).toString().trim() === 'true';
+  if (shallow && hasDates()) {
+    console.log('[sitemap-dates] 浅克隆环境,沿用入库日期文件(CI 不重新生成)');
     process.exit(0);
   }
-} catch { /* git 不可用则继续走生成逻辑 */ }
+} catch {
+  // 无 .git(CI 源码快照常见):沿用入库版本;仅当从未提交过才回退生成
+  if (hasDates()) {
+    console.log('[sitemap-dates] 无 git 历史,沿用入库日期文件');
+    process.exit(0);
+  }
+}
 
 const gitDate = (f) => {
   try {
-    return execSync(`git log -1 --format=%cI -- ${JSON.stringify(f)}`, { cwd: ROOT }).toString().trim() || null;
+    return execSync(`git log -1 --format=%cI -- ${JSON.stringify(f)}`, { cwd: ROOT, stdio: 'pipe' }).toString().trim() || null;
   } catch { return null; }
 };
 const fileDate = (f) => { try { return statSync(join(ROOT, f)).toISOString(); } catch { return null; } };
