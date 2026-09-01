@@ -19,21 +19,23 @@ const ROOT = new URL('..', import.meta.url).pathname;
 const DATES_FILE = 'src/data/sitemap-dates.json';
 const hasDates = () => existsSync(join(ROOT, DATES_FILE));
 
-// —— 环境守卫(必须在实际生成逻辑之前)——
-// 日期文件由本地全量 git 历史生成并随内容提交;任何无法还原逐文件历史的环境
-// (CI 无 .git / 浅克隆)一律沿用入库版本,避免日期退化为同一部署时间。
-try {
-  execSync('git rev-parse --git-dir', { cwd: ROOT, stdio: 'pipe' });
-  const shallow = execSync('git rev-parse --is-shallow-clone', { cwd: ROOT }).toString().trim() === 'true';
-  if (shallow && hasDates()) {
-    console.log('[sitemap-dates] 浅克隆环境,沿用入库日期文件(CI 不重新生成)');
-    process.exit(0);
-  }
-} catch {
-  // 无 .git(CI 源码快照常见):沿用入库版本;仅当从未提交过才回退生成
-  if (hasDates()) {
-    console.log('[sitemap-dates] 无 git 历史,沿用入库日期文件');
-    process.exit(0);
+// —— 沿用守卫(必须在实际生成逻辑之前)——
+// 日期文件由本地全量 git 历史生成并随内容提交。
+// 默认一律沿用入库版本(CI 检出 clean/无 .git 均命中),杜绝退化为部署时间;
+// 仅当存在未提交的内容变更(本地编辑)或显式传 --regenerate 时才重新生成。
+if (!process.argv.includes('--regenerate')) {
+  try {
+    const dirty = execSync('git status --porcelain -- src/content src/pages', { cwd: ROOT, stdio: 'pipe' }).toString().trim();
+    if (!dirty && hasDates()) {
+      console.log('[sitemap-dates] 内容无未提交变更,沿用入库日期文件');
+      process.exit(0);
+    }
+  } catch {
+    // 无 .git(CI 源码快照常见):沿用入库版本;仅当从未提交过才回退生成
+    if (hasDates()) {
+      console.log('[sitemap-dates] 无 git 历史,沿用入库日期文件');
+      process.exit(0);
+    }
   }
 }
 
