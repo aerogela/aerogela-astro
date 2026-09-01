@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "prebuild": "node scripts/gen-sitemap-dates.mjs",
-    "build": "astro build && pagefind --site dist",
+    "build": "astro build && node scripts/append-sitemap-redirects.mjs && pagefind --site dist",
     "preview": "astro preview"
   },
   "dependencies": {
