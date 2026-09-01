@@ -1,5 +1,5 @@
 node_modules
 dist
 .wrangler
-.DS_Store.credentials/
-src/data/sitemap-dates.json
+.DS_Store
+.credentials/

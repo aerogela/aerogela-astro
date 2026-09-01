@@ -6,12 +6,27 @@
  * - /listing-category|location/* ← 全部名录中最晚更新时间(聚合页随成员变化)
  * - 其余静态页         ← src/pages/[slug].astro / index.astro 的 git 时间
  * git 不可用时回退文件 mtime;输出 src/data/sitemap-dates.json
+ *
+ * 浅克隆守卫:CI(Cloudflare Pages)是 shallow clone,git log 只能看到 HEAD,
+ * 逐文件时间会全部退化成同一提交时间 → 此时沿用仓库里已提交的日期文件
+ * (日期文件由本地全量历史生成并随内容一起提交,CI 不再重新生成)。
  */
 import { execSync } from 'node:child_process';
 import { existsSync, readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = new URL('..', import.meta.url).pathname;
+
+// —— 浅克隆守卫(必须在实际生成逻辑之前)——
+try {
+  const shallow = execSync('git rev-parse --is-shallow-clone', { cwd: ROOT })
+    .toString().trim() === 'true';
+  if (shallow && existsSync(join(ROOT, 'src/data/sitemap-dates.json'))) {
+    console.log('[sitemap-dates] 浅克隆环境,沿用仓库已提交的日期文件(CI 不重新生成)');
+    process.exit(0);
+  }
+} catch { /* git 不可用则继续走生成逻辑 */ }
+
 const gitDate = (f) => {
   try {
     return execSync(`git log -1 --format=%cI -- ${JSON.stringify(f)}`, { cwd: ROOT }).toString().trim() || null;
@@ -46,12 +61,15 @@ for (const f of existsSync(join(ROOT, 'src/content/pages'))
   add(`/${f.replace(/\.(json|md)$/, '')}/`, bestDate(`src/content/pages/${f}`));
 }
 
-// 静态页与首页:页面源文件的变更时间
+// 静态页与首页:页面源文件的变更时间(含子目录 index.astro → /{dir}/)
+const walk = (dir, prefix = '') => readdirSync(join(ROOT, dir), { withFileTypes: true })
+  .flatMap((e) => (e.isDirectory() ? walk(`${dir}/${e.name}`, `${prefix}${e.name}/`) : [`${dir}/${e.name}`]));
 add('/', bestDate('src/pages/index.astro'));
-for (const f of existsSync(join(ROOT, 'src/pages'))
-  ? readdirSync(join(ROOT, 'src/pages')).filter((x) => x.endsWith('.astro') && !x.includes('['))
-  : []) {
-  add(`/${f.replace(/\.astro$/, '')}/`, bestDate(`src/pages/${f}`));
+for (const f of walk('src/pages')) {
+  if (!f.endsWith('.astro') || f.includes('[')) continue;
+  // 'listing/index' → 'listing',顶层 'index' → ''(首页)
+  const rel = f.replace(/^src\/pages\//, '').replace(/\.astro$/, '').replace(/\/?index$/, '');
+  add(`/${rel}/`, bestDate(f));
 }
 
 dates.__max_listings__ = maxListing || new Date().toISOString();
