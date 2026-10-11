@@ -3,3 +3,4 @@ dist
 .wrangler
 .DS_Store
 .credentials/
+node_modules.snapshot.tgz

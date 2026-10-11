@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import {
   SITE, canonical, htmlToText, listingSchema, breadcrumbSchema,
 } from '../../lib/seo';
+import taxonomy from '../../data/taxonomy.json';
 
 export async function getStaticPaths() {
   const listings = await getCollection('listings');
@@ -16,6 +17,41 @@ const path = `/listing/${e.slug}/`;
 const url = canonical(path);
 const desc = e.excerpt || htmlToText(e.content);
 
+// r15 内链网络:同分类横向链接 + 上下文统计(修复 49 条 listing"抓而不编")
+const allListings = await getCollection('listings');
+const primaryCat = e.category?.[0];
+const catMeta = (taxonomy.hp_listing_category || []).find((c) => c.name === primaryCat);
+const sameCat = primaryCat
+  ? allListings
+      .filter((x) => x.data.slug !== e.slug && (x.data.category || []).includes(primaryCat))
+      .sort((a, b) => {
+        const ra = a.data.review_status === 'reviewed' ? 0 : 1;
+        const rb = b.data.review_status === 'reviewed' ? 0 : 1;
+        return ra - rb || a.data.title.localeCompare(b.data.title);
+      })
+  : [];
+const related = sameCat.slice(0, 6);
+const catTotal = sameCat.length + 1;
+const country = e.location?.[0];
+const countryCount = country
+  ? allListings.filter((x) => (x.data.location || []).includes(country)).length
+  : 0;
+
+const STOP = new Set(['and', 'the', 'for', 'with', 'a', 'of', 'in', 'to', 'are', 'on', 'how', 'what', 'vs', 'from', 'real', 'need', 'meets', 'where']);
+const kw = [...e.category, ...e.main_products, ...e.application_fields]
+  .join(' ')
+  .toLowerCase()
+  .split(/[^a-z0-9]+/)
+  .filter((w) => w.length > 2 && !STOP.has(w));
+const relatedPosts = (await getCollection('posts'))
+  .map((p) => {
+    const t = `${p.data.title} ${p.data.excerpt || ''}`.toLowerCase();
+    return { p, score: kw.reduce((s, w) => s + (t.includes(w) ? 1 : 0), 0) };
+  })
+  .filter((x) => x.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3);
+
 // 目录站外链策略统一:正文中的供应商官网链接补 nofollow(与侧栏一致,
 // 避免被搜索引擎视为链接农场;博客 DOI 引用链接保持 follow 不受影响)
 const contentHtml = e.content.replace(
@@ -27,21 +63,25 @@ const contentHtml = e.content.replace(
   }
 );
 
-const schema = [
-  listingSchema(e, url),
-  breadcrumbSchema([
-    { name: 'Home', url: `${SITE.domain}/` },
-    { name: 'Suppliers', url: `${SITE.domain}/listing/` },
-    { name: e.title, url },
-  ]),
+const crumbs = [
+  { name: 'Home', url: `${SITE.domain}/` },
+  { name: 'Suppliers', url: `${SITE.domain}/listing/` },
 ];
+if (catMeta) {
+  crumbs.push({ name: catMeta.name, url: `${SITE.domain}/listing-category/${catMeta.slug}/` });
+}
+crumbs.push({ name: e.title, url });
+
+const schema = [listingSchema(e, url), breadcrumbSchema(crumbs)];
 ---
 
 <Base title={e.title} description={desc} path={path} schema={schema}>
   <div class="page-head">
     <div class="wrap">
       <div class="crumbs">
-        <a href="/">Home</a><span class="crumb-sep">/</span><a href="/listing/">Suppliers</a><span class="crumb-sep">/</span>{e.title}
+        <a href="/">Home</a><span class="crumb-sep">/</span><a href="/listing/">Suppliers</a>
+        {catMeta && <><span class="crumb-sep">/</span><a href={`/listing-category/${catMeta.slug}/`}>{catMeta.name}</a></>}
+        <span class="crumb-sep">/</span>{e.title}
       </div>
       <span class="eyebrow">Supplier datasheet</span>
       <h1>{e.title}</h1>
@@ -120,4 +160,52 @@ const schema = [
       </aside>
     </div>
   </div>
+
+  {related.length > 0 && catMeta && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Directory context</span>
+          <h2>More {primaryCat} suppliers</h2>
+          <p class="sub">
+            {e.title} is one of {catTotal} suppliers listed under {primaryCat} on aerogela
+            {country && countryCount > 0 && <> — the directory currently tracks {countryCount} aerogel-related companies based in {country}</>}.
+            Profiles are reviewed before publication; see our <a href="/how-listings-are-reviewed/">review process</a>.
+          </p>
+        </div>
+        <div class="cards">
+          {related.map((r) => (
+            <article class="card">
+              <span class="loc">{r.data.location?.[0] ?? 'Worldwide'}</span>
+              <h3><a href={`/listing/${r.data.slug}/`}>{r.data.title}</a></h3>
+              <div class="tags">
+                {(r.data.main_products ?? []).slice(0, 2).map((c) => <span class="tag">{c}</span>)}
+              </div>
+            </article>
+          ))}
+        </div>
+        <p style="margin-top:1.6rem;">
+          <a href={`/listing-category/${catMeta.slug}/`}>Browse all {primaryCat} suppliers →</a>
+        </p>
+      </div>
+    </section>
+  )}
+
+  {relatedPosts.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Knowledge base</span>
+          <h2>Related technical reading</h2>
+        </div>
+        <div class="cards">
+          {relatedPosts.map(({ p }) => (
+            <article class="card">
+              <h3><a href={`/blog/${p.data.slug}/`}>{p.data.title}</a></h3>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 </Base>

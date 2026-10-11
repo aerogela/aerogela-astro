@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * 生成 sitemap lastmod 日期映射(npm prebuild 自动运行,CI/本地通用):
- * - /listing/{slug}/   ← src/content/listings/{slug}.json 的 git 最后提交时间
- * - /blog/{slug}/      ← src/content/posts/{slug}.json 同上
+ * - /listing/{slug}/   ← src/content/listings/{slug}.json 的 git 最后提交时间(与其模板取较晚者)
+ * - /blog/{slug}/      ← src/content/posts/{slug}.json 同上(与其模板取较晚者)
  * - /listing-category|location/* ← 全部名录中最晚更新时间(聚合页随成员变化)
  * - 其余静态页         ← src/pages/[slug].astro / index.astro 的 git 时间
  * git 不可用时回退文件 mtime;输出 src/data/sitemap-dates.json
@@ -46,6 +46,12 @@ const gitDate = (f) => {
 };
 const fileDate = (f) => { try { return statSync(join(ROOT, f)).toISOString(); } catch { return null; } };
 const bestDate = (f) => gitDate(f) || fileDate(f);
+const maxDate = (...ds) => ds.filter(Boolean).sort().pop() || null;
+
+// r15: 模板变更同样改变页面渲染产物 → 动态页日期取"内容文件与模板文件"的较晚者,
+// 否则只改模板(如内链结构/排版)时 lastmod 永不刷新,搜索引擎不会提升重抓优先级
+const tplListing = bestDate('src/pages/listing/[slug].astro');
+const tplBlog = bestDate('src/pages/blog/[slug].astro');
 
 const dates = {};
 const add = (url, d) => { if (d && (!dates[url] || d > dates[url])) dates[url] = d; };
@@ -55,7 +61,7 @@ let maxListing = null;
 const listingDir = 'src/content/listings';
 if (existsSync(join(ROOT, listingDir))) {
   for (const f of readdirSync(join(ROOT, listingDir)).filter((x) => x.endsWith('.json'))) {
-    const d = bestDate(`${listingDir}/${f}`);
+    const d = maxDate(bestDate(`${listingDir}/${f}`), tplListing);
     add(`/listing/${f.replace(/\.json$/, '')}/`, d);
     if (d && (!maxListing || d > maxListing)) maxListing = d;
   }
@@ -63,7 +69,7 @@ if (existsSync(join(ROOT, listingDir))) {
 for (const f of existsSync(join(ROOT, 'src/content/posts'))
   ? readdirSync(join(ROOT, 'src/content/posts')).filter((x) => x.endsWith('.json') || x.endsWith('.md'))
   : []) {
-  add(`/blog/${f.replace(/\.(json|md)$/, '')}/`, bestDate(`src/content/posts/${f}`));
+  add(`/blog/${f.replace(/\.(json|md)$/, '')}/`, maxDate(bestDate(`src/content/posts/${f}`), tplBlog));
 }
 
 // 静态内容页(src/content/pages 经 [slug].astro 渲染)
