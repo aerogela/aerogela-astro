@@ -1,27 +1,27 @@
 {
-  "slug": "fraunhofer-institute-for-building-physics-ibp",
-  "title": "Fraunhofer Institute for Building Physics IBP",
-  "date": "Tue, 21 Apr 2026 19:16:40 +0000",
-  "content": "<p>Aerogel Research Institute. Fraunhofer Institute for Building Physics IBP is a research institute focused on building physics, testing, consulting, and performance validation. Its work is directly relevant to aerogel insulation, thermal assessment, and building-envelope evaluation.</p>\n",
-  "excerpt": "",
-  "website": "https://www.ibp.fraunhofer.de/en.html",
-  "certifications": "",
-  "verified": "",
-  "review_status": "reviewed",
-  "review_notes": "Directory profile reviewed for listing quality, category fit, and current public website availability.",
-  "category": [
-    "Research Services"
-  ],
-  "location": [
-    "Germany"
-  ],
-  "main_products": [
-    "Aerogel R&D and Testing Services"
-  ],
-  "application_fields": [
-    "Building & Construction",
-    "Materials Research & Development",
-    "Testing & Characterization"
-  ],
-  "hero": ""
+ "slug": "fraunhofer-institute-for-building-physics-ibp",
+ "title": "Fraunhofer Institute for Building Physics IBP",
+ "date": "Tue, 21 Apr 2026 19:16:40 +0000",
+ "content": "<p>The Fraunhofer Institute for Building Physics IBP, with branches in Stuttgart and Holzkirchen, is Germany's leading research institute for building physics, covering acoustics, energy efficiency and indoor climate, hygrothermics, life cycle engineering, and inorganic materials. Over 350 scientists and engineers operate extensive laboratories, environmental test chambers, and what is believed to be the largest outdoor testing site of its kind in Holzkirchen.</p>\n<p>Fraunhofer IBP is approved by German building inspection authorities as a testing, monitoring, and certification center for building materials and techniques. Its insulation-materials testing and hygrothermal assessment work is directly relevant to aerogel products; for example, the field performance and material parameters of aerogel-based high-performance insulating plaster have been independently evaluated at Holzkirchen.</p>",
+ "excerpt": "",
+ "website": "https://www.ibp.fraunhofer.de/en.html",
+ "certifications": "",
+ "verified": "",
+ "review_status": "reviewed",
+ "review_notes": "Directory profile reviewed for listing quality, category fit, and current public website availability.",
+ "category": [
+  "Research Services"
+ ],
+ "location": [
+  "Germany"
+ ],
+ "main_products": [
+  "Aerogel R&D and Testing Services"
+ ],
+ "application_fields": [
+  "Building & Construction",
+  "Materials Research & Development",
+  "Testing & Characterization"
+ ],
+ "hero": ""
 }

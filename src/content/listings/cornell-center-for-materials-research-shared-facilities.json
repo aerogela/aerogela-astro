@@ -1,26 +1,26 @@
 {
-  "slug": "cornell-center-for-materials-research-shared-facilities",
-  "title": "Cornell Center for Materials Research Shared Facilities",
-  "date": "Tue, 21 Apr 2026 19:28:40 +0000",
-  "content": "<p>Aerogel University Research Platform. Cornell Center for Materials Research Shared Facilities is a university-based shared instrumentation platform for materials analysis and processing. Its microscopy, spectroscopy, and surface-analysis capabilities make it relevant for aerogel development and materials characterization workflows.</p>\n",
-  "excerpt": "",
-  "website": "https://www.ccmr.cornell.edu/",
-  "certifications": "",
-  "verified": "",
-  "review_status": "reviewed",
-  "review_notes": "Directory profile reviewed for listing quality, category fit, and current public website availability.",
-  "category": [
-    "Research Services"
-  ],
-  "location": [
-    "United States of America"
-  ],
-  "main_products": [
-    "Aerogel R&D and Testing Services"
-  ],
-  "application_fields": [
-    "Materials Research & Development",
-    "Testing & Characterization"
-  ],
-  "hero": ""
+ "slug": "cornell-center-for-materials-research-shared-facilities",
+ "title": "Cornell Center for Materials Research Shared Facilities",
+ "date": "Tue, 21 Apr 2026 19:28:40 +0000",
+ "content": "<p>The Cornell Center for Materials Research (CCMR) Shared Facilities is a shared instrumentation platform at Cornell University in Ithaca, New York, supported by the National Science Foundation through the MRSEC program. Based mainly in Duffield Hall, it offers world-class materials analysis and processing equipment, including electron microscopy (SEM, TEM, FIB), x-ray diffraction, AFM, and surface and spectroscopy analysis, overseen by expert instrument managers.</p>\n<p>The facilities are open to academic researchers and external users, including companies, which can access characterization services, instrument training, and expert consultation through programs such as Explore, which funds first use for New York State businesses. These capabilities support development workflows for aerogels and other porous, low-density materials.</p>",
+ "excerpt": "",
+ "website": "https://www.ccmr.cornell.edu/",
+ "certifications": "",
+ "verified": "",
+ "review_status": "reviewed",
+ "review_notes": "Directory profile reviewed for listing quality, category fit, and current public website availability.",
+ "category": [
+  "Research Services"
+ ],
+ "location": [
+  "United States of America"
+ ],
+ "main_products": [
+  "Aerogel R&D and Testing Services"
+ ],
+ "application_fields": [
+  "Materials Research & Development",
+  "Testing & Characterization"
+ ],
+ "hero": ""
 }
