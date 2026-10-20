@@ -1,0 +1,353 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE, canonical, breadcrumbSchema } from '../../lib/seo';
+
+const path = '/tools/insulation-thickness-calculator/';
+const title = 'Insulation Thickness & Heat Loss Calculator'; // 44 chars → 55 with " | aerogela" suffix
+const description =
+  'Estimate flat-surface heat loss and compare aerogel blanket vs mineral wool vs PIR by thermal conductivity. Estimation tool, not engineering design.'; // ≤155
+
+const url = canonical(path);
+
+const faqSchema = {
+  '@type': 'FAQPage',
+  '@id': `${url}#faq`,
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What is the calculation principle behind this insulation calculator?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The tool uses Fourier\u2019s law of steady-state conduction through a flat layer: Q = \u03bb \u00d7 A \u00d7 \u0394T / t, where Q is heat loss in watts, \u03bb is thermal conductivity (W/m\u00b7K), A is surface area (m\u00b2), \u0394T is the temperature difference between the hot face and ambient (K), and t is insulation thickness (m). It models the insulation layer only; surface convection and radiation resistances are not included.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How accurate are the results, and where do the errors come from?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Results are indicative estimates. Main error sources: (1) \u03bb varies with mean temperature, density and product generation \u2014 real datasheets give design \u03bb at operating temperature; (2) surface film resistance (convection + radiation) is ignored, so bare-surface losses and low \u0394T cases are overstated; (3) real installations have joints, seams, compression and aging that raise effective \u03bb. Expect deviations of roughly \u00b120\u201350% versus a full heat-loss calculation. Use it for screening, not for design.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How should I choose between aerogel blanket, mineral wool and PIR?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Choose by available space, temperature range and budget: aerogel blanket (\u03bb \u2248 0.018\u20130.023 W/m\u00b7K) wins where thickness, weight or CUI risk matter \u2014 typical retrofit, piping and EV applications; mineral wool (\u03bb \u2248 0.035\u20130.045 W/m\u00b7K) is the low-cost default where space is not constrained; PIR (\u03bb \u2248 0.021\u20130.025 W/m\u00b7K) suits flat panels in building and cold-chain use. For precise selection at your operating temperature, request a datasheet from suppliers.',
+      },
+    },
+  ],
+};
+
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${SITE.domain}/` },
+    { name: 'Insulation Thickness & Heat Loss Calculator', url },
+  ]),
+  faqSchema,
+];
+
+// 典型 λ 范围（前端展示用）；计算默认值取中位典型值
+const materials = [
+  { id: 'aerogel', label: 'Aerogel blanket', lambda: 0.02, range: '0.018\u20130.023' },
+  { id: 'rockwool', label: 'Mineral wool (rock wool)', lambda: 0.04, range: '0.035\u20130.045' },
+  { id: 'pir', label: 'PIR foam', lambda: 0.023, range: '0.021\u20130.025' },
+];
+---
+
+<Base title={title} description={description} path={path} schema={schema}>
+  <div class="page-head">
+    <div class="wrap">
+      <div class="crumbs">
+        <a href="/">Home</a><span class="crumb-sep">/</span>Insulation Thickness &amp; Heat Loss Calculator
+      </div>
+      <span class="eyebrow">Free estimation tool</span>
+      <h1>Insulation Thickness &amp; Heat Loss Calculator</h1>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="tool-notice">
+      ⚠️ Estimation tool only — based on simplified flat-surface conduction with typical λ values.
+      Real engineering design requires a formal thermal calculation with certified datasheet data.
+    </div>
+
+    <div class="tool-grid">
+      <form id="calc-form" class="tool-form" aria-label="Insulation heat loss inputs">
+        <label>
+          <span>Surface area A (m²)</span>
+          <input type="number" id="area" value="10" min="0.1" step="0.1" inputmode="decimal" required />
+        </label>
+        <label>
+          <span>Hot-face temperature (°C)</span>
+          <input type="number" id="thot" value="200" min="-200" max="1000" step="1" inputmode="decimal" required />
+        </label>
+        <label>
+          <span>Ambient temperature (°C)</span>
+          <input type="number" id="tamb" value="25" min="-100" max="100" step="1" inputmode="decimal" required />
+        </label>
+        <label>
+          <span>Insulation thickness t (mm)</span>
+          <input type="number" id="thk" value="10" min="1" max="500" step="1" inputmode="decimal" required />
+        </label>
+        <label>
+          <span>Material</span>
+          <select id="mat">
+            {materials.map((m) => (
+              <option value={m.id} data-lambda={m.lambda} selected={m.id === 'aerogel'}>
+                {m.label} — λ ≈ {m.range} W/m·K
+              </option>
+            ))}
+          </select>
+        </label>
+        <p class="fnote">
+          Typical λ values shown as ranges; the calculation uses one representative value per material
+          (aerogel 0.020, mineral wool 0.040, PIR 0.023 W/m·K) at moderate mean temperature.
+        </p>
+      </form>
+
+      <div class="tool-results" aria-live="polite">
+        <div class="res res-main">
+          <span class="res-label">Estimated heat loss through insulation</span>
+          <span class="res-value"><span id="q-val">—</span> W</span>
+          <span class="res-sub" id="q-flux">— W/m²</span>
+        </div>
+        <div class="res-row">
+          <div class="res">
+            <span class="res-label">Mineral wool, same thickness</span>
+            <span class="res-value res-sm"><span id="q-mw">—</span> W</span>
+            <span class="res-sub" id="q-mw-x">—×</span>
+          </div>
+          <div class="res">
+            <span class="res-label">Mineral wool needed for equal loss</span>
+            <span class="res-value res-sm"><span id="t-mw">—</span> mm</span>
+            <span class="res-sub" id="t-mw-x">—×</span>
+          </div>
+        </div>
+        <p class="fnote" id="mat-note">
+          Aerogel blanket at the same thickness loses roughly half the heat of mineral wool; to match
+          aerogel performance, mineral wool needs about twice the thickness.
+        </p>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="section-head">
+        <span class="eyebrow">How it works</span>
+        <h2>Calculation principle &amp; limits</h2>
+      </div>
+      <div class="prose" style="max-width:47rem;">
+        <p>
+          The calculator applies Fourier’s law of steady-state conduction through a flat layer:
+          <strong>Q = λ · A · ΔT / t</strong>, where λ is thermal conductivity (W/m·K), A the surface
+          area (m²), ΔT the difference between hot-face and ambient temperature (K), and t the
+          insulation thickness (m). Heat flux (W/m²) is Q divided by A.
+        </p>
+        <p>
+          Key simplifications: surface convection and radiation films are not modelled, λ is treated
+          as constant over the temperature span, and joints, seams, compression and aging are ignored.
+          That makes the output a screening estimate — deviations of ±20–50% versus a full heat-loss
+          calculation are normal, especially at low ΔT or with thin layers.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <span class="eyebrow">Next steps</span>
+        <h2>Need precise selection data?</h2>
+      </div>
+      <div class="cta-row" style="padding-bottom:1.5rem;">
+        <a class="btn btn-solid" href="/contact-supplier/">Request a datasheet <span class="arr">→</span></a>
+        <a class="btn btn-ghost" href="/listing/">Browse verified suppliers <span class="arr">→</span></a>
+      </div>
+      <div class="cards" style="max-width:60rem;">
+        <article class="card">
+          <h3><a href="/blog/silica-aerogel-vs-mineral-wool-vs-pir/">Silica Aerogel vs Mineral Wool vs PIR</a></h3>
+          <p class="exc">Head-to-head comparison of the three materials behind this calculator — λ, temperature limits, cost and best-fit applications.</p>
+        </article>
+        <article class="card">
+          <h3><a href="/blog/aerogel-insulation-for-industrial-pipes/">Aerogel Insulation for Industrial Pipes</a></h3>
+          <p class="exc">Why thin, flexible aerogel blankets replace thick mineral wool on pipes where space and CUI risk matter.</p>
+        </article>
+        <article class="card">
+          <h3><a href="/blog/aerogel-thermal-conductivity-measured-vs-datasheet-what-chinese-test-data-reveals/">Measured λ vs Datasheet Values</a></h3>
+          <p class="exc">What independent test data reveals about the gap between claimed and measured thermal conductivity.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section faq">
+      <div class="section-head">
+        <span class="eyebrow">FAQ</span>
+        <h2>Common questions</h2>
+      </div>
+      <div class="prose" style="max-width:47rem;">
+        <h3>What is the calculation principle?</h3>
+        <p>
+          Steady-state conduction through a flat layer: Q = λ × A × ΔT / t. The result is the heat
+          flow (W) passing through the insulated surface once steady conditions are reached; divide
+          by area for heat flux (W/m²).
+        </p>
+        <h3>How accurate are the results?</h3>
+        <p>
+          Indicative only. λ varies with mean temperature and product; surface films are excluded;
+          installation factors are ignored. Expect ±20–50% deviation from a formal calculation — use
+          it to compare materials and thicknesses, not to certify a design.
+        </p>
+        <h3>Which material should I choose?</h3>
+        <p>
+          Aerogel blanket (λ ≈ 0.018–0.023 W/m·K) where thickness, weight or CUI risk dominate;
+          mineral wool (λ ≈ 0.035–0.045) where cost matters and space is free; PIR (λ ≈ 0.021–0.025)
+          for flat panels in building and cold-chain work. For your exact operating temperature,
+          request a datasheet and design λ from the supplier.
+        </p>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<script>
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+
+  const form = $('calc-form');
+  const outQ = $('q-val');
+  const outFlux = $('q-flux');
+  const outMw = $('q-mw');
+  const outMwX = $('q-mw-x');
+  const outTMw = $('t-mw');
+  const outTMwX = $('t-mw-x');
+
+  // 代表性 λ（W/m·K），与下拉选项 data-lambda 一致
+  const LAMBDA_MW = 0.04;
+
+  function num(el: HTMLInputElement | null): number {
+    const v = el ? parseFloat(el.value) : NaN;
+    return Number.isFinite(v) ? v : NaN;
+  }
+
+  function fmt(x: number, digits = 1): string {
+    if (!Number.isFinite(x)) return '—';
+    if (Math.abs(x) >= 1000) return x.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    return x.toLocaleString('en-US', { maximumFractionDigits: digits });
+  }
+
+  function calc() {
+    const A = num($('area') as HTMLInputElement);
+    const thot = num($('thot') as HTMLInputElement);
+    const tamb = num($('tamb') as HTMLInputElement);
+    const tmm = num($('thk') as HTMLInputElement);
+    const sel = $('mat') as HTMLSelectElement | null;
+    const lambda = sel ? parseFloat(sel.selectedOptions[0]?.dataset.lambda || '0.02') : NaN;
+
+    if ([A, thot, tamb, tmm, lambda].some((v) => !Number.isFinite(v)) || tmm <= 0 || A <= 0) {
+      outQ && (outQ.textContent = '—');
+      outFlux && (outFlux.textContent = 'Enter valid inputs');
+      return;
+    }
+
+    const dt = thot - tamb;
+    const t = tmm / 1000; // mm → m
+    const q = (lambda * A * Math.abs(dt)) / t; // W（取 |ΔT|，冷面工况同样适用）
+    const qMw = (LAMBDA_MW * A * Math.abs(dt)) / t;
+    const tMwMm = (LAMBDA_MW / lambda) * tmm;
+
+    outQ && (outQ.textContent = fmt(q));
+    outFlux && (outFlux.textContent = `${fmt(q / A, 1)} W/m² heat flux`);
+    outMw && (outMw.textContent = fmt(qMw));
+    outMwX && (outMwX.textContent = `${fmt(qMw / q, 1)}× the aerogel loss`);
+    outTMw && (outTMw.textContent = fmt(tMwMw, 0));
+    outTMwX && (outTMwX.textContent = `${fmt(tMwMm / tmm, 1)}× aerogel thickness`);
+  }
+
+  form?.addEventListener('input', calc);
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    calc();
+  });
+  calc();
+</script>
+
+<style>
+  .tool-notice {
+    max-width: 60rem;
+    margin: 1.8rem auto 0;
+    padding: 0.85rem 1.1rem;
+    border: 1px solid #e8d9b8;
+    background: #fdf6e7;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #6b5b2e;
+    line-height: 1.5;
+  }
+  .tool-grid {
+    max-width: 60rem;
+    margin: 1.6rem auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    align-items: start;
+  }
+  @media (max-width: 720px) {
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+  .tool-form {
+    display: grid;
+    gap: 0.9rem;
+    padding: 1.3rem;
+    border: 1px solid var(--line, #ddd);
+    border-radius: 12px;
+    background: #fff;
+  }
+  .tool-form label { display: grid; gap: 0.3rem; }
+  .tool-form label span {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted, #777);
+  }
+  .tool-form input,
+  .tool-form select {
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--line, #ddd);
+    border-radius: 8px;
+    font: inherit;
+    background: var(--paper, #faf9f4);
+  }
+  .tool-form input:focus,
+  .tool-form select:focus { outline: 2px solid var(--teal, #0d7684); outline-offset: 1px; }
+  .tool-results { display: grid; gap: 0.9rem; }
+  .res {
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--line, #ddd);
+    border-radius: 12px;
+    background: #fff;
+    display: grid;
+    gap: 0.25rem;
+  }
+  .res-main { background: var(--teal, #0d7684); border-color: var(--teal, #0d7684); color: #fff; }
+  .res-main .res-label { color: #d7ecEE; }
+  .res-main .res-sub { color: #cbe5e8; }
+  .res-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted, #777);
+  }
+  .res-value {
+    font-family: var(--font-display, inherit);
+    font-weight: 800;
+    font-size: 1.8rem;
+    line-height: 1.1;
+  }
+  .res-value.res-sm { font-size: 1.35rem; }
+  .res-sub { font-size: 0.82rem; color: var(--muted, #777); }
+  .res-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  @media (max-width: 480px) {
+    .res-row { grid-template-columns: 1fr; }
+  }
+  .fnote { font-size: 0.8rem; color: var(--muted, #777); margin: 0; line-height: 1.5; }
+</style>
