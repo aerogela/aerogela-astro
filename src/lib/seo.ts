@@ -13,12 +13,12 @@ export const SITE = {
 export function pageTitle(t?: string): string {
   if (!t || t === SITE.name) return SITE.title;
   const suffix = ' | aerogela';
-  const budget = 70 - suffix.length;
-  if (t.length <= budget) return `${t}${suffix}`;
-  let cut = t.slice(0, budget);
+  if (t.length + suffix.length <= 60) return `${t}${suffix}`;
+  // 超长时词边界截断到 60(品牌后缀舍弃, SERP 里域名自带品牌), 不再腰斩单词
+  let cut = t.slice(0, 60);
   const sp = cut.lastIndexOf(' ');
-  if (sp > budget * 0.6) cut = cut.slice(0, sp); // 词边界安全截断
-  return `${cut.replace(/[\s,;:.\-–—]+$/, '')}${suffix}`;
+  if (sp > 40) cut = cut.slice(0, sp);
+  return cut.trim();
 }
 
 /** 绝对 canonical */
