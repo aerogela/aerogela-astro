@@ -40,11 +40,28 @@ const faqSchema = {
   ],
 };
 
+const webApplicationSchema = {
+  '@type': 'WebApplication',
+  '@id': `${url}#app`,
+  name: 'Insulation Thickness & Heat Loss Calculator',
+  url,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  description,
+};
+
 const schema = [
   breadcrumbSchema([
     { name: 'Home', url: `${SITE.domain}/` },
     { name: 'Insulation Thickness & Heat Loss Calculator', url },
   ]),
+  webApplicationSchema,
   faqSchema,
 ];
 
@@ -244,6 +261,10 @@ const materials = [
     if ([A, thot, tamb, tmm, lambda].some((v) => !Number.isFinite(v)) || tmm <= 0 || A <= 0) {
       outQ && (outQ.textContent = '—');
       outFlux && (outFlux.textContent = 'Enter valid inputs');
+      outMw && (outMw.textContent = '—');
+      outMwX && (outMwX.textContent = '—×');
+      outTMw && (outTMw.textContent = '—');
+      outTMwX && (outTMwX.textContent = '—×');
       return;
     }
 
@@ -257,7 +278,7 @@ const materials = [
     outFlux && (outFlux.textContent = `${fmt(q / A, 1)} W/m² heat flux`);
     outMw && (outMw.textContent = fmt(qMw));
     outMwX && (outMwX.textContent = `${fmt(qMw / q, 1)}× the aerogel loss`);
-    outTMw && (outTMw.textContent = fmt(tMwMw, 0));
+    outTMw && (outTMw.textContent = fmt(tMwMm, 0));
     outTMwX && (outTMwX.textContent = `${fmt(tMwMm / tmm, 1)}× aerogel thickness`);
   }
 
